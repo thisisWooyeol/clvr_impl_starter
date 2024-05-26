@@ -20,7 +20,8 @@ class ImageDecoder(nn.Module):
             self.layers.append(nn.LeakyReLU(0.2))
             _channels //= 2
         self.layers.append(nn.ConvTranspose2d(_channels, 3, kernel_size=3, 
-                                    stride=2, padding=1, output_padding=1)) 
+                                    stride=2, padding=1, output_padding=1))
+        self.layers.append(nn.Tanh())
         
     def forward(self, x):
         # x: (B, L, C)
