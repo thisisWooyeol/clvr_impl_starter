@@ -1,31 +1,31 @@
 import torch
 import torch.nn as nn
 
-import reward_induced.model as model
+import reward_induced.models.reward_predictor_model as reward_predictor_model
 
 
 def test_RewardPredictorModel():
     image_shape = (3, 64, 64)
     n_frames = 3
     T_future = 5
-    predictor = model.RewardPredictorModel(image_shape, n_frames, T_future)
+    predictor = reward_predictor_model.RewardPredictorModel(image_shape, n_frames, T_future)
 
     x = torch.randn(2, 3, 3, 64, 64)
     y = torch.randn(2, 5, 3, 64, 64)
-    z = predictor(x, y)
+    z = predictor(x, y, reward_type=['agent_x', 'agent_y', 'target_x'])
     print(f'[test_RewardPredictorModel] predictor output z: {z}')
-    assert z.shape == torch.Size([2, 5]), f'Expected shape: [2, 5], got: {z.shape}'
+    assert z.keys() == {'agent_x', 'agent_y', 'target_x'}
+    assert all (output.shape == torch.Size([2, 5]) for output in z.values()), \
+            f'Expected shape: [2, 5], got: {[output.shape for output in z.values()]}'
 
 
 def test_ImageEncoder():
     image_shape = (3, 64, 64)
-    encoder = model.ImageEncoder(image_shape)
+    encoder = reward_predictor_model.ImageEncoder(image_shape)
 
     assert encoder.level == 6
-    assert len(encoder.convs) == 6
-    assert all(isinstance(conv, nn.Conv2d) for conv in encoder.convs)
-    assert encoder.convs[0].in_channels == 3
-    assert encoder.convs[5].out_channels == 2 ** 6 * 2  #(=128)
+    assert encoder.layers[0].in_channels == 3
+    assert encoder.layers[10].out_channels == 2 ** 6 * 2  #(=128)
     
     x = torch.randn(2, 3, 3, 64, 64)
     y = encoder(x)

@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 from math import log2
 
+from sprites_datagen.rewards import AgentXReward, AgentYReward, TargetXReward, TargetYReward
+
+R_CLASSES = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name]
+
 
 class RewardPredictorModel(nn.Module):
     def __init__(self, image_shape, n_frames, T_future):
@@ -12,12 +16,22 @@ class RewardPredictorModel(nn.Module):
         self.image_encoder = ImageEncoder(image_shape)
         self.encoder_mlp = MLP(2 ** (1+self.image_encoder.level) * self.n_frames, 64)
         self.predictor_lstm = PredictorLSTM(input_size=128, hidden_size=32)
-        self.reward_head_mlp = MLP(32, 1)
+        self.reward_head_mlp = nn.ModuleDict({ r: MLP(32, 1) for r in R_CLASSES })
 
-    def forward(self, conditioning_frames, future_frames):
+    def to(self, *args, **kwargs):
+        super(RewardPredictorModel, self).to(*args, **kwargs)
+        self.reward_head_mlp.to(*args, **kwargs)
+        return self
+
+    def forward(self, conditioning_frames, future_frames, reward_type=None):
         # assume input shape is (B, n_frames, 3, 64, 64) and (B, T_future, 3, 64, 64)
         assert conditioning_frames.shape[1] == self.n_frames
         assert future_frames.shape[1] == self.T_future
+
+        if reward_type is None:
+            reward_type = R_CLASSES
+        else :
+            assert all(r in R_CLASSES for r in reward_type)
 
         # encode each frame
         cond_features = self.image_encoder(conditioning_frames)
@@ -26,18 +40,22 @@ class RewardPredictorModel(nn.Module):
         # map to 64-dim observation space
         cond_features = torch.flatten(cond_features, start_dim=1)
         _hidden_states = self.encoder_mlp(cond_features)
-        h0, c0 = torch.chunk(_hidden_states.unsqueeze(0), chunks=2, dim=2)
+        h0 = _hidden_states[:, :32].unsqueeze(0).contiguous()
+        c0 = _hidden_states[:, 32:].unsqueeze(0).contiguous()
 
         # predict future
         output = self.predictor_lstm(future_features, (h0, c0))
 
         # hidden state to reward
-        reward_pred = []
-        for i in range(self.T_future):
-            reward_pred.append(self.reward_head_mlp(output[:, i, :]))
-        reward_pred = torch.stack(reward_pred, dim=1)
+        reward_aggregated = {}
+        for r in reward_type:    
+            reward_pred = []
+            for i in range(self.T_future):
+                reward_pred.append(self.reward_head_mlp[r](output[:, i, :]))
+            reward_pred = torch.stack(reward_pred, dim=1)
+            reward_aggregated[r] = reward_pred.squeeze()
 
-        return reward_pred.squeeze()
+        return reward_aggregated
 
 
 class ImageEncoder(nn.Module):
@@ -46,11 +64,12 @@ class ImageEncoder(nn.Module):
         self.level = int(log2(image_shape[-1]))
         _channels = 4
         
-        self.convs = nn.ModuleList([
+        self.layers = nn.ModuleList([
             nn.Conv2d(3, _channels, kernel_size=3, stride=2, padding=1)
         ])
         for i in range(self.level-1):
-            self.convs.append(
+            self.layers.append(nn.ReLU())
+            self.layers.append(
                 nn.Conv2d(_channels, _channels * 2, kernel_size=3, stride=2, padding=1))
             _channels *= 2
     
@@ -59,12 +78,13 @@ class ImageEncoder(nn.Module):
         output = []
         for b in range(x.shape[0]):
             y = x[b]
-            for conv in self.convs:
-                y = torch.relu(conv(y))
+            for layer in self.layers:
+                y = layer(y)
             output.append(y)
 
         output = torch.stack(output, dim=0)
-        assert output.shape == torch.Size([x.shape[0], x.shape[1], 2 ** self.level * 2, 1, 1]), f'Expected shape: [B, L, 128, 1, 1], got: {output.shape}'
+        assert output.shape == torch.Size([x.shape[0], x.shape[1], 2 ** self.level * 2, 1, 1]), \
+                f'Expected shape: [B, L, {2 ** self.level * 2}, 1, 1], got: {output.shape}'
 
         return torch.flatten(output, start_dim=2)
 
