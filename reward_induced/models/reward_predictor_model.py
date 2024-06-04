@@ -2,10 +2,12 @@ import torch
 import torch.nn as nn
 from math import log2
 
-from sprites_datagen.rewards import AgentXReward, AgentYReward, TargetXReward, TargetYReward
+from sprites_datagen.rewards import *
 
-R_CLASSES = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name]
-
+# VertPosReward alias to AgentYReward, HorPosReward alias to AgentXReward
+R_CLASSES_ALL = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name,
+             VertPosReward().name, HorPosReward().name]  
+R_CLASSES_BASE = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name,]
 
 class RewardPredictorModel(nn.Module):
     def __init__(self, image_shape, n_frames, T_future):
@@ -16,7 +18,7 @@ class RewardPredictorModel(nn.Module):
         self.image_encoder = ImageEncoder(image_shape)
         self.encoder_mlp = MLP(2 ** (1+self.image_encoder.level) * self.n_frames, 64)
         self.predictor_lstm = PredictorLSTM(input_size=128, hidden_size=32)
-        self.reward_head_mlp = nn.ModuleDict({ r: MLP(32, 1) for r in R_CLASSES })
+        self.reward_head_mlp = nn.ModuleDict({ r: MLP(32, 1) for r in R_CLASSES_ALL })
 
     def to(self, *args, **kwargs):
         super(RewardPredictorModel, self).to(*args, **kwargs)
@@ -29,9 +31,9 @@ class RewardPredictorModel(nn.Module):
         assert future_frames.shape[1] == self.T_future
 
         if reward_type is None:
-            reward_type = R_CLASSES
+            reward_type = R_CLASSES_BASE
         else :
-            assert all(r in R_CLASSES for r in reward_type)
+            assert all(r in R_CLASSES_ALL for r in reward_type)
 
         # encode each frame
         cond_features = self.image_encoder(conditioning_frames)
