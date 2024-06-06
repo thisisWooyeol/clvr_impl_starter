@@ -13,6 +13,9 @@ class MovingSpriteDataset(Dataset):
         self._spec = spec
         self._generator = DistractorTemplateMovingSpritesGenerator(self._spec)
 
+    def __len__(self):
+        return self._spec.batch_size
+
     def __getitem__(self, item):
         traj = self._generator.gen_trajectory()
 
