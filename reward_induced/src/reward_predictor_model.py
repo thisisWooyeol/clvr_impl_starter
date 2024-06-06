@@ -28,7 +28,14 @@ class RewardPredictorModel(nn.Module):
         return self
 
     def forward(self, frames, reward_type_list=None):
-        # assume input shape is (n_frames + T_future, 3, H, W)
+        """
+        Args:
+            frames: (n_frames + T_future, 3, H, W)
+            reward_type_list: list of reward type to predict
+        Returns:
+            reward_aggregated: dict of reward type to predicted reward
+            future_repr: (T_future, 64)
+        """
         assert frames.shape[0] == self.n_frames + self.T_future, \
                 f'Expected {self.n_frames + self.T_future} size of timesteps, got: {frames.shape[0]}'
 
@@ -53,7 +60,7 @@ class RewardPredictorModel(nn.Module):
             reward_pred = self.reward_head_mlp[r](future_repr)
             reward_aggregated[r] = reward_pred.squeeze(-1)
 
-        return reward_aggregated
+        return reward_aggregated, future_repr
 
 
 class ImageEncoder(nn.Module):
