@@ -4,7 +4,7 @@ from math import log2
 
 from sprites_datagen.rewards import *
 
-# VertPosReward alias to AgentYReward, HorPosReward alias to AgentXReward
+# Reward classes
 R_CLASSES_ALL = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name,
              VertPosReward().name, HorPosReward().name]  
 R_CLASSES_BASE = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name,]
@@ -34,7 +34,6 @@ class RewardPredictorModel(nn.Module):
             reward_type_list: list of reward type to predict
         Returns:
             reward_aggregated: dict of reward type to predicted reward
-            future_repr: (T_future, 64)
         """
         assert frames.shape[0] == self.n_frames + self.T_future, \
                 f'Expected {self.n_frames + self.T_future} size of timesteps, got: {frames.shape[0]}'
@@ -60,7 +59,7 @@ class RewardPredictorModel(nn.Module):
             reward_pred = self.reward_head_mlp[r](future_repr)
             reward_aggregated[r] = reward_pred.squeeze(-1)
 
-        return reward_aggregated, future_repr
+        return reward_aggregated
 
 
 class ImageEncoder(nn.Module):
