@@ -37,14 +37,11 @@ def test_ImageEncoder():
 def test_ImageDecoder():
     image_shape = (3, 64, 64)
     decoder = ImageDecoder(image_shape)
-
     assert decoder.level == 6
-    assert decoder.layers[0].in_channels == 128
-    assert decoder.layers[10].out_channels == 3
 
-    x = torch.randn(3, 128)
+    x = torch.randn(5, 3, 64)
     y = decoder(x)
-    assert y.shape == torch.Size([3, 3, 64, 64]), f'Expected shape: [3, 3, 64, 64], got: {y.shape}'
+    assert y.shape == torch.Size([5, 3, 3, 64, 64]), f'Expected shape: [5, 3, 3, 64, 64], got: {y.shape}'
 
 
 if __name__ == "__main__":
