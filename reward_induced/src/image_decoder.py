@@ -32,10 +32,10 @@ class ImageDecoder(nn.Module):
 
         self.layers = nn.Sequential(
             nn.Linear(in_size, HIDDEN_SIZE),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE),
-            nn.ReLU(),
-            nn.Linear(HIDDEN_SIZE, out_size*out_size)
+            nn.GELU(),
+            nn.Linear(HIDDEN_SIZE, out_size*out_size),
         )
         
     def forward(self, x):
@@ -52,4 +52,4 @@ class ImageDecoder(nn.Module):
         L = x.shape[1]
         x = self.layers(x)
         x = x.reshape(B, L, 1, self.out_size, self.out_size)
-        return x.expand(B, L, 3, self.out_size, self.out_size) - 1
+        return x.expand(B, L, 3, self.out_size, self.out_size)
