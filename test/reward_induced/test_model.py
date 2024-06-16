@@ -1,7 +1,7 @@
 import torch
 
 from reward_induced.src.reward_predictor import RewardPredictor, ImageEncoder
-from reward_induced.src.image_decoder import StateDecoder
+from reward_induced.src.state_decoder import StateDecoder
 
 
 

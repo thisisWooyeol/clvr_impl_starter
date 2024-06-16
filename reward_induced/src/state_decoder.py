@@ -3,12 +3,12 @@ import torch.nn as nn
 from math import log2
 
 
-class ImageDecoder(nn.Module):
+class StateDecoder(nn.Module):
     """
     Decode reward-induced representation to image
     """
     def __init__(self, in_size, out_size):
-        super(ImageDecoder, self).__init__()
+        super(StateDecoder, self).__init__()
         # assume square image and H, W should be power of 2
         # assert image_shape[-1] == image_shape[-2]
         # self.level = int(log2(image_shape[-1]))
@@ -27,14 +27,14 @@ class ImageDecoder(nn.Module):
         # _layers.append(nn.ConvTranspose2d(_channels, 3, kernel_size=3, 
         #                             stride=1, padding=1))        
         # self.convs = nn.Sequential(*_layers)
-        HIDDEN_SIZE = 32
+        HIDDEN_SIZE = 128
         self.out_size = out_size
 
         self.layers = nn.Sequential(
             nn.Linear(in_size, HIDDEN_SIZE),
-            nn.GELU(),
+            nn.ReLU(),
             nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE),
-            nn.GELU(),
+            nn.ReLU(),
             nn.Linear(HIDDEN_SIZE, out_size*out_size),
         )
         
