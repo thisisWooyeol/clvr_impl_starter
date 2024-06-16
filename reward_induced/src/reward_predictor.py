@@ -10,51 +10,53 @@ R_CLASSES_ALL = [AgentXReward().name, AgentYReward().name, TargetXReward().name,
 R_CLASSES_BASE = [AgentXReward().name, AgentYReward().name, TargetXReward().name, TargetYReward().name,]
 
 
-class RewardPredictorModel(nn.Module):
-    def __init__(self, image_shape, n_frames, T_future):
-        super(RewardPredictorModel, self).__init__()
+class RewardPredictor(nn.Module):
+    def __init__(self, image_shape, n_frames, T_future, reward_type_list=None):
+        super(RewardPredictor, self).__init__()
         self.n_frames = n_frames
         self.T_future = T_future
         REPR_SIZE = 64
 
+        if reward_type_list is None:
+            self.reward_type_list = R_CLASSES_BASE
+        else :
+            assert all(r in R_CLASSES_ALL for r in reward_type_list)
+            self.reward_type_list = reward_type_list
+
         self.image_encoder = ImageEncoder(image_shape, REPR_SIZE)
-        self.predictor_lstm = PredictorLSTM(input_size=REPR_SIZE, hidden_size=REPR_SIZE)
-        self.reward_head_mlp = nn.ModuleDict({ r: MLP(REPR_SIZE, 1) for r in R_CLASSES_ALL })
+        self.predictor_lstm = PredictorLSTM(REPR_SIZE, REPR_SIZE)
+        self.reward_head_mlp = nn.ModuleDict({ r: MLP(REPR_SIZE, 1) for r in self.reward_type_list })
 
     def to(self, *args, **kwargs):
-        super(RewardPredictorModel, self).to(*args, **kwargs)
+        super(RewardPredictor, self).to(*args, **kwargs)
         self.reward_head_mlp.to(*args, **kwargs)
         return self
 
-    def forward(self, frames, reward_type_list=None):
+    def forward(self, frames):
         """
         Args:
-            frames: (n_frames + T_future, 3, H, W)
-            reward_type_list: list of reward type to predict
+            frames: (B, n_frames + T_future, 3, H, W)
         Returns:
-            reward_aggregated: dict of reward type to predicted reward
+            reward_aggregated: dict of reward type to predicted reward, each with shape (B, T_future)
         """
         assert frames.shape[1] == self.n_frames + self.T_future, \
                 f'Expected {self.n_frames + self.T_future} size of timesteps, got: {frames.shape[1]}'
 
-        if reward_type_list is None:
-            reward_type_list = R_CLASSES_BASE
-        else :
-            assert all(r in R_CLASSES_ALL for r in reward_type_list)
 
-        # encode conditioning frames & map to 64-dim observation space
+        # encode frames & map to 64-dim observation space
         # (B, n_frames + T_future, 3, H, W) -> (B, n_frames + T_future, 64)
         representations = self.image_encoder(frames)
 
         # predict conditional future representations p(z_t|z_{t-1}, z_{t-2}, ...)
         # n_frames-th repr encodes the 1st future frame
+        # LSTM output shape == (B, n_frames + T_future, 64)
         # future_repr.shape == (B, T_future, 64)
         future_repr, _ = self.predictor_lstm(representations)
         future_repr = future_repr[:, -1-self.T_future:-1]
 
         # hidden state to reward
         reward_aggregated = {}
-        for r in reward_type_list:
+        for r in self.reward_type_list:
             reward_pred = self.reward_head_mlp[r](future_repr)
             reward_aggregated[r] = reward_pred.squeeze(-1)
 
@@ -64,7 +66,7 @@ class RewardPredictorModel(nn.Module):
 class ImageEncoder(nn.Module):
     def __init__(self, image_shape: tuple, out_features: int):
         super(ImageEncoder, self).__init__()
-        # assume square image and H, W should be power of 2
+        # assume square image (H=W) and H, W should be power of 2
         assert image_shape[-1] == image_shape[-2]
         self.level = int(log2(image_shape[-1]))
         _channels = 4
@@ -72,7 +74,7 @@ class ImageEncoder(nn.Module):
         _convs = [
             nn.Conv2d(3, _channels, kernel_size=3, stride=2, padding=1)
         ]
-        for i in range(self.level-1):
+        for _ in range(self.level-1):
             _convs.append(nn.ReLU())
             _convs.append(
                 nn.Conv2d(_channels, _channels * 2, kernel_size=3, stride=2, padding=1))
@@ -82,15 +84,15 @@ class ImageEncoder(nn.Module):
         self.projection = nn.Linear(_channels, out_features)
     
     def forward(self, x):
-        # x: (B, L, C_in, H, W)
+        # x: (B, L, C, H, W)
         B = x.shape[0]
         L = x.shape[1]
         x = x.view(B*L, *x.shape[2:])
 
         x = self.convs(x)        
-        assert x.shape == torch.Size([B*L, 2 ** self.level * 2, 1, 1]), \
-                f'Expected shape: [{B}, {L}, {2 ** (1+self.level)}, 1, 1], got: {x.shape}'
-        # will output (L, out_features)
+        assert x.shape == torch.Size([B*L, 2 ** (1+self.level), 1, 1]), \
+                f'Expected shape: [{B*L}, {2 ** (1+self.level)}, 1, 1], got: {x.shape}'
+        # will output (B, L, out_features)
         return self.projection(x.view(B, L, -1))
 
 
