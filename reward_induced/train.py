@@ -19,7 +19,7 @@ def evaluate_encoder(
         rewards = ['AgentXReward', 'AgentYReward', 'TargetXReward', 'TargetYReward'],
         model_save_prefix='reward_induced/models/encoder/encoder',
         log_file_prefix='reward_induced/logs/evaluate_encoder'):
-    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj > 2 else rewards[0] # HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >=2 else rewards[0] # HorPosReward or VertPosReward case
     log_file_path = log_file_prefix + f'_{env_mode}.log'
     model_path = model_save_prefix + f'_{env_mode}_final.pt'
 
@@ -65,11 +65,9 @@ def evaluate_encoder(
 
     logger.info(f"True rewards from 0th traj: {true_rewards[:,0,:]}")
     logger.info(f"Predicted rewards from 0th traj: {pred_rewards[:,0,:]}")
-    logger.info(f"""Losses:
-        - AgentXReward:  {torch.mean(loss[0]).item()}
-        - AgentYReward:  {torch.mean(loss[1]).item()}
-        - TargetXReward: {torch.mean(loss[2]).item()}
-        - TargetYReward: {torch.mean(loss[3]).item()}""")
+    logger.info("Losses:")
+    for i, r in enumerate(rewards):
+        logger.info(f"    - {r}\t: {torch.mean(loss[i]).item()}")
     logger.info(f"Evaluation complete.")   
 
 
@@ -85,7 +83,7 @@ def train_encoder(
         log_file_prefix='reward_induced/logs/train_encoder',
         model_save_prefix='reward_induced/models/encoder/encoder',
         plot_save_prefix='reward_induced/logs/encoder'):
-    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj > 2 else rewards[0] # HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >= 2 else rewards[0] # HorPosReward or VertPosReward case
     log_file_path = log_file_prefix + f'_{env_mode}.log'
     model_save_prefix = model_save_prefix + f'_{env_mode}'
     plot_save_path = plot_save_prefix + f'_{env_mode}.png'
