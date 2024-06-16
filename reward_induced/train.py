@@ -1,29 +1,125 @@
 import torch
 import torch.nn as nn
+import numpy as np
 
-from general_utils import AttrDict
+import cv2
+import imageio
+import logging
+import matplotlib.pyplot as plt
+
+from general_utils import AttrDict, make_image_seq_strip
 from reward_induced.src.reward_predictor import RewardPredictor
 from reward_induced.src.state_decoder import StateDecoder
 from sprites_datagen.moving_sprites import MovingSpriteDataset
 import sprites_datagen.rewards as rewards_module
 
-import logging
-import matplotlib.pyplot as plt
 
 
-def evaluate_encoder(
+def visualize_decoder(
         shapes_per_traj,
-        batch_size=128,
         n_frames=1,
         T_future=29,
-        rewards = ['AgentXReward', 'AgentYReward', 'TargetXReward', 'TargetYReward'],
-        model_save_prefix='reward_induced/models/encoder/encoder',
-        log_file_prefix='reward_induced/logs/evaluate_encoder'):
-    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >=2 else rewards[0] # HorPosReward or VertPosReward case
+        rewards = ['HorPosReward'],  # or ['VertPosReward']
+        encoder_prefix='reward_induced/models/encoder/encoder',
+        decoder_prefix='reward_induced/models/decoder/decoder',
+        log_file_prefix='reward_induced/logs/decoder/visualize_decoder',
+        img_save_prefix='reward_induced/logs/decoder/'):
+    # Consider HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >= 2 else rewards[0]
+    encoder_path = encoder_prefix + f'_{env_mode}_final.pt'
+    decoder_path = decoder_prefix + f'_{env_mode}_final.pt'
     log_file_path = log_file_prefix + f'_{env_mode}.log'
-    model_path = model_save_prefix + f'_{env_mode}_final.pt'
+    img_save_prefix += env_mode
 
     logger = _setup_logger(log_file_path)
+
+    spec = AttrDict(
+        resolution=64,
+        max_seq_len=30,
+        max_speed=0.05,
+        obj_size=0.2,
+        shapes_per_traj=shapes_per_traj,
+        rewards=[ getattr(rewards_module, r) for r in rewards ],
+        batch_size=1,
+    )
+    dataset = MovingSpriteDataset(spec)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1)
+    rewards = [r.NAME for r in spec.rewards]
+
+    encoder = RewardPredictor((3,64,64), n_frames, T_future, reward_type_list=rewards)
+    encoder.load_state_dict(torch.load(encoder_path))
+    decoder = StateDecoder(in_size=64, out_size=64)
+    decoder.load_state_dict(torch.load(decoder_path))
+    decoder.eval()
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    encoder.to(device)
+    decoder.to(device)
+    logger.info(f"[INFO] Visualizing State Decoder on device: {device}")
+    logger.info(f"""[INFO] Visualizing with the following configuration:
+        - Input shape: (3,64,64)
+        - Number of frames: {n_frames}
+        - Number of future frames: {T_future}
+        - Reward types: {rewards}
+        - Shapes per trajectory: {shapes_per_traj}
+        - Batch size: 1
+        - Encoder loaded from: {encoder_path}
+        - Decoder loaded from: {decoder_path}""")
+
+
+    data = next(iter(dataloader))
+    frames = data['images'].to(device)
+
+    # Save ground truth sequence as seq image and gif
+    true_frames = ( data['images'].numpy() + 1 ) * (255.0 / 2)
+    true_seq_frames = make_image_seq_strip([true_frames], sep_val=255.0).astype(np.uint8)
+    cv2.imwrite(f'{img_save_prefix}_true_seq.png', true_seq_frames[0].transpose(1,2,0))
+    logger.info(f"True sequence img saved at {img_save_prefix}_true_seq.png")
+
+    with imageio.get_writer(f'{img_save_prefix}_true_seq.gif', mode='I', duration=1.0) as writer:
+        for frame in true_frames[0]:
+            writer.append_data(frame.astype(np.uint8))
+    logger.info(f"True sequence gif saved at {img_save_prefix}_true_seq.gif")
+
+    # Generate(Predict) future frames
+    with torch.no_grad():
+        pred_frames = decoder(encoder(frames)[0])
+    pred_frames = ( pred_frames.cpu().numpy() + 1 ) * (255.0 / 2)
+
+    pred_seq_frames = make_image_seq_strip([pred_frames], sep_val=255.0).astype(np.uint8)
+    cv2.imwrite(f'{img_save_prefix}_pred_seq.png', pred_seq_frames[0].transpose(1,2,0))
+    logger.info(f"Predicted sequence img saved at {img_save_prefix}_pred_seq.png")
+
+    with imageio.get_writer(f'{img_save_prefix}_pred_seq.gif', mode='I', duration=1.0) as writer:
+        for frame in pred_frames[0]:
+            writer.append_data(frame.astype(np.uint8))
+    logger.info(f"Predicted sequence gif saved at {img_save_prefix}_pred_seq.gif")
+    
+    logger.info(f"Visualization complete.")
+
+
+
+def train_decoder(
+        shapes_per_traj,
+        batch_size,
+        n_frames=1,
+        T_future=29,
+        rewards = ['HorPosReward'],  # or ['VertPosReward']
+        n_iters=1000,
+        save_every=100,
+        encoder_prefix='reward_induced/models/encoder/encoder',
+        log_file_prefix='reward_induced/logs/decoder/train_decoder',
+        model_save_prefix='reward_induced/models/decoder/decoder',
+        plot_save_prefix='reward_induced/logs/decoder/decoder'):
+    # Consider HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >= 2 else rewards[0]
+    encoder_path = encoder_prefix + f'_{env_mode}_final.pt'
+    log_file_path = log_file_prefix + f'_{env_mode}.log'
+    model_save_prefix = model_save_prefix + f'_{env_mode}'
+    plot_save_path = plot_save_prefix + f'_{env_mode}.png'
+
+    logger = _setup_logger(log_file_path)
+
     spec = AttrDict(
         resolution=64,
         max_seq_len=30,
@@ -34,7 +130,102 @@ def evaluate_encoder(
         batch_size=batch_size,
     )
     dataset = MovingSpriteDataset(spec)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size) # use 128 in default for averaging
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
+    rewards = [r.NAME for r in spec.rewards]
+
+    encoder = RewardPredictor((3,64,64), n_frames, T_future, reward_type_list=rewards)
+    encoder.load_state_dict(torch.load(encoder_path))
+    decoder = StateDecoder(in_size=64, out_size=64)
+    loss_fn = nn.MSELoss()
+    optimizer = torch.optim.RAdam(decoder.parameters(), lr=1e-3)
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    encoder.to(device)
+    decoder.to(device)
+    logger.info(f"[INFO] Training State Decoder on device: {device}")
+    logger.info(f"""[INFO] Training with the following configuration:
+        - Input shape: (3,64,64)
+        - Number of frames: {n_frames}
+        - Number of future frames: {T_future}
+        - Reward types: {rewards}
+        - Number of iterations: {n_iters}
+        - Shapes per trajectory: {shapes_per_traj}
+        - Batch size: {batch_size}
+        - Encoder loaded from: {encoder_path}""")
+
+
+    losses = []
+    for i in range(n_iters):
+        # get data
+        data = next(iter(dataloader))
+        frames = data['images'].to(device)
+        # true_frames = frames[:, -T_future:]
+        true_frames = frames
+
+        # lstm encoded future repr & decode to image
+        with torch.no_grad():
+            reprs = encoder(frames)[0].detach()
+        pred_frames = decoder(reprs)
+        
+        # compute loss
+        loss = loss_fn(pred_frames, true_frames)
+        losses.append(loss.item())
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # log message
+        print(f"[{i+1}/{n_iters}] Loss: {loss.item()}", end='\r')
+        if (i+1) % save_every == 0:
+            logger.info(f"[{i+1}/{n_iters}] Loss: {loss.item()}")
+
+        # save intermediate model
+        if (i+1) % (save_every * 4) == 0:
+            torch.save(decoder.state_dict(), f'{model_save_prefix}_{i+1}.pt')
+            logger.info(f"Intermediate model save at {model_save_prefix}_{i+1}.pt")
+
+
+    # plot losses and save
+    plt.plot(losses)
+    plt.xlabel('Iteration')
+    plt.ylabel('Loss')
+    plt.title('State Decoder Loss')
+    plt.savefig(plot_save_path)
+    logger.info(f"Loss plot saved at {plot_save_path}")
+
+    torch.save(decoder.state_dict(), f'{model_save_prefix}_final.pt')
+    logger.info(f"Final model saved at {model_save_prefix}_final.pt")
+    logger.info(f"Training complete.")
+
+
+
+def evaluate_encoder(
+        shapes_per_traj,
+        batch_size=128,
+        n_frames=1,
+        T_future=29,
+        rewards = ['AgentXReward', 'AgentYReward', 'TargetXReward', 'TargetYReward'],
+        model_save_prefix='reward_induced/models/encoder/encoder',
+        log_file_prefix='reward_induced/logs/encoder/evaluate_encoder'):
+    # Consider HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >=2 else rewards[0] 
+    log_file_path = log_file_prefix + f'_{env_mode}.log'
+    model_path = model_save_prefix + f'_{env_mode}_final.pt'
+
+    logger = _setup_logger(log_file_path)
+
+    spec = AttrDict(
+        resolution=64,
+        max_seq_len=30,
+        max_speed=0.05,
+        obj_size=0.2,
+        shapes_per_traj=shapes_per_traj,
+        rewards=[ getattr(rewards_module, r) for r in rewards ],
+        batch_size=batch_size,
+    )
+    dataset = MovingSpriteDataset(spec)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size) 
     rewards = [r.NAME for r in spec.rewards]
 
     model = RewardPredictor((3,64,64), n_frames, T_future, reward_type_list=rewards)
@@ -80,12 +271,13 @@ def train_encoder(
         rewards = ['AgentXReward', 'AgentYReward', 'TargetXReward', 'TargetYReward'],
         n_iters=1000,
         save_every=100,
-        log_file_prefix='reward_induced/logs/train_encoder',
         model_save_prefix='reward_induced/models/encoder/encoder',
-        plot_save_prefix='reward_induced/logs/encoder'):
-    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >= 2 else rewards[0] # HorPosReward or VertPosReward case
-    log_file_path = log_file_prefix + f'_{env_mode}.log'
+        log_file_prefix='reward_induced/logs/encoder/train_encoder',
+        plot_save_prefix='reward_induced/logs/encoder/encoder'):
+    # Consider HorPosReward or VertPosReward case
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj >= 2 else rewards[0]
     model_save_prefix = model_save_prefix + f'_{env_mode}'
+    log_file_path = log_file_prefix + f'_{env_mode}.log'
     plot_save_path = plot_save_prefix + f'_{env_mode}.png'
 
     logger = _setup_logger(log_file_path)
