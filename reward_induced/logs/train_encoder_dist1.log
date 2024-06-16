@@ -1,0 +1,30 @@
+[INFO] Training Reward Predictor on device: cuda
+[INFO] Training with the following configuration:
+        - Input shape: (3,64,64)
+        - Number of frames: 1
+        - Number of future frames: 29
+        - Reward types: ['agent_x', 'agent_y', 'target_x', 'target_y']
+        - Number of iterations: 1500
+        - Shapes per trajectory: 3
+        - Batch size: 64
+[100/1500] Loss: 0.06684310734272003
+[200/1500] Loss: 0.05267918482422829
+[300/1500] Loss: 0.029679134488105774
+[400/1500] Loss: 0.027705548331141472
+Intermediate model save at reward_induced/models/encoder/encoder_dist1_400.pt
+[500/1500] Loss: 0.024671560153365135
+[600/1500] Loss: 0.02174326963722706
+[700/1500] Loss: 0.018766427412629128
+[800/1500] Loss: 0.017052147537469864
+Intermediate model save at reward_induced/models/encoder/encoder_dist1_800.pt
+[900/1500] Loss: 0.013709522783756256
+[1000/1500] Loss: 0.010504468344151974
+[1100/1500] Loss: 0.005552585702389479
+[1200/1500] Loss: 0.004469064995646477
+Intermediate model save at reward_induced/models/encoder/encoder_dist1_1200.pt
+[1300/1500] Loss: 0.003403240814805031
+[1400/1500] Loss: 0.00293985428288579
+[1500/1500] Loss: 0.00252624717541039
+Loss plot saved at reward_induced/logs/encoder_dist1.png
+Final model saved at reward_induced/models/encoder/encoder_dist1_final.pt
+Training complete.

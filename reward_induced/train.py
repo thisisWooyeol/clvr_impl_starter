@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from general_utils import AttrDict
 from reward_induced.src.reward_predictor import RewardPredictor
+from reward_induced.src.state_decoder import StateDecoder
 from sprites_datagen.moving_sprites import MovingSpriteDataset
 import sprites_datagen.rewards as rewards_module
 
@@ -12,13 +13,15 @@ import matplotlib.pyplot as plt
 
 def evaluate_encoder(
         shapes_per_traj,
+        batch_size=128,
         n_frames=1,
         T_future=29,
         rewards = ['AgentXReward', 'AgentYReward', 'TargetXReward', 'TargetYReward'],
         model_save_prefix='reward_induced/models/encoder/encoder',
         log_file_prefix='reward_induced/logs/evaluate_encoder'):
-    log_file_path = log_file_prefix + f'_dist{shapes_per_traj-2}.log'
-    model_path = model_save_prefix + f'_dist{shapes_per_traj-2}_final.pt'
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj > 2 else rewards[0] # HorPosReward or VertPosReward case
+    log_file_path = log_file_prefix + f'_{env_mode}.log'
+    model_path = model_save_prefix + f'_{env_mode}_final.pt'
 
     logger = _setup_logger(log_file_path)
     spec = AttrDict(
@@ -28,10 +31,10 @@ def evaluate_encoder(
         obj_size=0.2,
         shapes_per_traj=shapes_per_traj,
         rewards=[ getattr(rewards_module, r) for r in rewards ],
-        batch_size=1,
+        batch_size=batch_size,
     )
     dataset = MovingSpriteDataset(spec)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=128) # use 128 for averaging
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size) # use 128 in default for averaging
     rewards = [r.NAME for r in spec.rewards]
 
     model = RewardPredictor((3,64,64), n_frames, T_future, reward_type_list=rewards)
@@ -47,7 +50,7 @@ def evaluate_encoder(
         - Number of future frames: {T_future}
         - Reward types: {rewards}
         - Shapes per trajectory: {shapes_per_traj}
-        - Batch size: 128
+        - Batch size: {batch_size}
         - Model loaded from: {model_path}""")
     
     data = next(iter(dataloader))
@@ -82,9 +85,10 @@ def train_encoder(
         log_file_prefix='reward_induced/logs/train_encoder',
         model_save_prefix='reward_induced/models/encoder/encoder',
         plot_save_prefix='reward_induced/logs/encoder'):
-    log_file_path = log_file_prefix + f'_dist{shapes_per_traj-2}.log'
-    model_save_prefix = model_save_prefix + f'_dist{shapes_per_traj-2}'
-    plot_save_path = plot_save_prefix + f'_dist{shapes_per_traj-2}.png'
+    env_mode = f'dist{shapes_per_traj - 2}' if shapes_per_traj > 2 else rewards[0] # HorPosReward or VertPosReward case
+    log_file_path = log_file_prefix + f'_{env_mode}.log'
+    model_save_prefix = model_save_prefix + f'_{env_mode}'
+    plot_save_path = plot_save_prefix + f'_{env_mode}.png'
 
     logger = _setup_logger(log_file_path)
 
