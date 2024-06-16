@@ -50,7 +50,6 @@ def visualize_decoder(
     encoder.load_state_dict(torch.load(encoder_path))
     decoder = StateDecoder(in_size=64, out_size=64)
     decoder.load_state_dict(torch.load(decoder_path))
-    decoder.eval()
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     encoder.to(device)
@@ -81,19 +80,19 @@ def visualize_decoder(
             writer.append_data(frame.astype(np.uint8))
     logger.info(f"True sequence gif saved at {img_save_prefix}_true_seq.gif")
 
-    # Generate(Predict) future frames
+    # Reconstruct frames
     with torch.no_grad():
-        pred_frames = decoder(encoder(frames)[0])
-    pred_frames = ( pred_frames.cpu().numpy() + 1 ) * (255.0 / 2)
+        recon_frames = decoder(encoder(frames)[0])
+    recon_frames = ( recon_frames.cpu().numpy() + 1 ) * (255.0 / 2)
 
-    pred_seq_frames = make_image_seq_strip([pred_frames], sep_val=255.0).astype(np.uint8)
-    cv2.imwrite(f'{img_save_prefix}_pred_seq.png', pred_seq_frames[0].transpose(1,2,0))
-    logger.info(f"Predicted sequence img saved at {img_save_prefix}_pred_seq.png")
+    recon_seq_frames = make_image_seq_strip([recon_frames], sep_val=255.0).astype(np.uint8)
+    cv2.imwrite(f'{img_save_prefix}_recon_seq.png', recon_seq_frames[0].transpose(1,2,0))
+    logger.info(f"Reconstructed sequence img saved at {img_save_prefix}_recon_seq.png")
 
-    with imageio.get_writer(f'{img_save_prefix}_pred_seq.gif', mode='I', duration=1.0) as writer:
-        for frame in pred_frames[0]:
+    with imageio.get_writer(f'{img_save_prefix}_recon_seq.gif', mode='I', duration=1.0) as writer:
+        for frame in recon_frames[0]:
             writer.append_data(frame.astype(np.uint8))
-    logger.info(f"Predicted sequence gif saved at {img_save_prefix}_pred_seq.gif")
+    logger.info(f"Reconstructed sequence gif saved at {img_save_prefix}_recon_seq.gif")
     
     logger.info(f"Visualization complete.")
 
@@ -159,16 +158,14 @@ def train_decoder(
         # get data
         data = next(iter(dataloader))
         frames = data['images'].to(device)
-        # true_frames = frames[:, -T_future:]
-        true_frames = frames
 
         # lstm encoded future repr & decode to image
         with torch.no_grad():
             reprs = encoder(frames)[0].detach()
-        pred_frames = decoder(reprs)
+        recon_frames = decoder(reprs)
         
         # compute loss
-        loss = loss_fn(pred_frames, true_frames)
+        loss = loss_fn(recon_frames, frames)
         losses.append(loss.item())
 
         optimizer.zero_grad()
@@ -233,7 +230,6 @@ def evaluate_encoder(
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
-    model.eval()
     logger.info(f"[INFO] Loaded Reward Predictor from {model_path}")
     logger.info(f"""[INFO] Evaluating Reward Predictor with the following configuration:
         - Input shape: (3,64,64)
