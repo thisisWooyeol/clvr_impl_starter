@@ -1,0 +1,24 @@
+[INFO] Training Reward Predictor on device: cuda
+[INFO] Training with the following configuration:
+        - Input shape: (3,64,64)
+        - Number of frames: 1
+        - Number of future frames: 29
+        - Reward types: ['horizontal_position']
+        - Number of iterations: 1000
+        - Shapes per trajectory: 1
+        - Batch size: 64
+[100/1000] Loss: 0.051771748811006546
+[200/1000] Loss: 0.05004743114113808
+[300/1000] Loss: 0.010025541298091412
+[400/1000] Loss: 0.0013675778172910213
+Intermediate model save at reward_induced/models/encoder/encoder_HorPosReward_400.pt
+[500/1000] Loss: 0.0007854605792090297
+[600/1000] Loss: 0.000315328681608662
+[700/1000] Loss: 0.000249849894316867
+[800/1000] Loss: 0.0002411636960459873
+Intermediate model save at reward_induced/models/encoder/encoder_HorPosReward_800.pt
+[900/1000] Loss: 0.00018276998889632523
+[1000/1000] Loss: 0.00014494579227175564
+Loss plot saved at reward_induced/logs/encoder_HorPosReward.png
+Final model saved at reward_induced/models/encoder/encoder_HorPosReward_final.pt
+Training complete.
