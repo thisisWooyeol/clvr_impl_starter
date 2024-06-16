@@ -45,13 +45,13 @@ class RewardPredictor(nn.Module):
 
         # encode frames & map to 64-dim observation space
         # (B, n_frames + T_future, 3, H, W) -> (B, n_frames + T_future, 64)
-        representations = self.image_encoder(frames)
+        frame_repr = self.image_encoder(frames)
 
         # predict conditional future representations p(z_t|z_{t-1}, z_{t-2}, ...)
         # n_frames-th repr encodes the 1st future frame
         # LSTM output shape == (B, n_frames + T_future, 64)
         # future_repr.shape == (B, T_future, 64)
-        future_repr, _ = self.predictor_lstm(representations)
+        future_repr, _ = self.predictor_lstm(frame_repr)
         future_repr = future_repr[:, -1-self.T_future:-1]
 
         # hidden state to reward
@@ -60,7 +60,7 @@ class RewardPredictor(nn.Module):
             reward_pred = self.reward_head_mlp[r](future_repr)
             reward_aggregated[r] = reward_pred.squeeze(-1)
 
-        return future_repr, reward_aggregated
+        return frame_repr, reward_aggregated
 
 
 class ImageEncoder(nn.Module):
