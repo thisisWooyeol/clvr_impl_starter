@@ -5,6 +5,7 @@ from reward_induced.train import (
     evaluate_encoder,
     train_encoder,
 )
+from reward_induced.ablation import ablation_decoder
 
 if __name__ == '__main__':
     fire.Fire()
