@@ -19,17 +19,17 @@ class ZeroReward(Reward):
         return np.zeros((trajectories.shape[0],), dtype=np.float32)
 
 
-class VertPosReward(Reward):
-    """Returns reward proportional to the vertical position of the first object."""
-    NAME = 'vertical_position'
+class HorPosReward(Reward):
+    """Returns reward proportional to the horizontal position of the first object."""
+    NAME = 'horizontal_position'
 
     def __call__(self, trajectories, shapes):
         return trajectories[:, 0, 1]
 
 
-class HorPosReward(Reward):
-    """Returns reward proportional to the horizontal position of the first object."""
-    NAME = 'horizontal_position'
+class VertPosReward(Reward):
+    """Returns reward proportional to the vertical position of the first object."""
+    NAME = 'vertical_position'
 
     def __call__(self, trajectories, shapes):
         return trajectories[:, 0, 0]
