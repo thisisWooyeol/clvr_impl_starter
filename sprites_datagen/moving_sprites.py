@@ -9,15 +9,16 @@ from sprites_datagen.utils.trajectory import ConstantSpeedTrajectory
 
 class MovingSpriteDataset(Dataset):
     """Dataset of multiple sprites bouncing in frame, contains different reward annotations."""
-    def __init__(self, spec):
+    def __init__(self, spec, init_from=None):
         self._spec = spec
+        self._init_from = init_from
         self._generator = DistractorTemplateMovingSpritesGenerator(self._spec)
 
     def __len__(self):
         return self._spec.batch_size
 
     def __getitem__(self, item):
-        traj = self._generator.gen_trajectory()
+        traj = self._generator.gen_trajectory(self._init_from)
 
         data_dict = AttrDict()
         data_dict.images = traj.images[:, None].repeat(3, axis=1).astype(np.float32) / (255./2) - 1.0
@@ -37,12 +38,12 @@ class MovingSpritesGenerator:
         bounds = [[self._spec.obj_size/2, 1 - self._spec.obj_size/2]] * 2
         self._traj_gen = ConstantSpeedTrajectory(n_dim=2, pos_bounds=bounds, max_speed=self._spec.max_speed)
 
-    def gen_trajectory(self):
+    def gen_trajectory(self, init_from=None):
         """Samples trajectory with bouncing sprites."""
         output = AttrDict()
 
         # sample coordinate trajectories [T, n_shapes, state_dim]
-        output.states = self._traj_gen.create(self._spec.max_seq_len, self._spec.shapes_per_traj)
+        output.states = self._traj_gen.create(self._spec.max_seq_len, self._spec.shapes_per_traj, init_from=init_from)
 
         # sample shapes for trajectory
         output.shape_idxs = self._sample_shapes()

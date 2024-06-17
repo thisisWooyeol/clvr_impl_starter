@@ -87,8 +87,8 @@ class Trajectory(object):
         tjs[0], state = self._init(n_trajectories)
 
         if init_from is not None:
-            tjs[0] = init_from
-            state[:, :self._n_dim] = init_from.copy()
+            tjs[0] = init_from[:self._n_dim]
+            state[:, :self._n_state] = init_from.copy()
 
         for t in range(1, n_timesteps):
             tjs[t], state = self.forward(state)
