@@ -10,6 +10,6 @@
         - Decoder loaded from: reward_induced/models/decoder/decoder_HorPosReward_final.pt
 True sequence img saved at reward_induced/logs/decoder/HorPosReward_true_seq.png
 True sequence gif saved at reward_induced/logs/decoder/HorPosReward_true_seq.gif
-Predicted sequence img saved at reward_induced/logs/decoder/HorPosReward_pred_seq.png
-Predicted sequence gif saved at reward_induced/logs/decoder/HorPosReward_pred_seq.gif
+Reconstructed sequence img saved at reward_induced/logs/decoder/HorPosReward_recon_seq.png
+Reconstructed sequence gif saved at reward_induced/logs/decoder/HorPosReward_recon_seq.gif
 Visualization complete.

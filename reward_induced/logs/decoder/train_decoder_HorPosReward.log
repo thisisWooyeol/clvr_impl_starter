@@ -8,18 +8,18 @@
         - Shapes per trajectory: 1
         - Batch size: 64
         - Encoder loaded from: reward_induced/models/encoder/encoder_HorPosReward_final.pt
-[100/1000] Loss: 0.08673257380723953
-[200/1000] Loss: 0.05314883217215538
-[300/1000] Loss: 0.052611224353313446
-[400/1000] Loss: 0.05248010531067848
+[100/1000] Loss: 0.05445557460188866
+[200/1000] Loss: 0.05318654328584671
+[300/1000] Loss: 0.05275971069931984
+[400/1000] Loss: 0.05186314135789871
 Intermediate model save at reward_induced/models/decoder/decoder_HorPosReward_400.pt
-[500/1000] Loss: 0.05156491696834564
-[600/1000] Loss: 0.05137914791703224
-[700/1000] Loss: 0.05091196671128273
-[800/1000] Loss: 0.051032956689596176
+[500/1000] Loss: 0.050339892506599426
+[600/1000] Loss: 0.049103379249572754
+[700/1000] Loss: 0.04674838110804558
+[800/1000] Loss: 0.04558072239160538
 Intermediate model save at reward_induced/models/decoder/decoder_HorPosReward_800.pt
-[900/1000] Loss: 0.05049876123666763
-[1000/1000] Loss: 0.05059938505291939
+[900/1000] Loss: 0.04387631639838219
+[1000/1000] Loss: 0.04219823330640793
 Loss plot saved at reward_induced/logs/decoder/decoder_HorPosReward.png
 Final model saved at reward_induced/models/decoder/decoder_HorPosReward_final.pt
 Training complete.
