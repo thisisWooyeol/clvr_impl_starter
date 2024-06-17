@@ -7,18 +7,18 @@
         - Number of iterations: 1000
         - Shapes per trajectory: 1
         - Batch size: 64
-[100/1000] Loss: 0.049675531685352325
-[200/1000] Loss: 0.04929466173052788
-[300/1000] Loss: 0.04788674786686897
-[400/1000] Loss: 0.0026151305064558983
+[100/1000] Loss: 0.06027821823954582
+[200/1000] Loss: 0.05056595802307129
+[300/1000] Loss: 0.0062516434118151665
+[400/1000] Loss: 0.0006530562532134354
 Intermediate model save at reward_induced/models/encoder/encoder_VertPosReward_400.pt
-[500/1000] Loss: 0.0010693197837099433
-[600/1000] Loss: 0.0006101974286139011
-[700/1000] Loss: 0.0004924886743538082
-[800/1000] Loss: 0.0006159906624816358
+[500/1000] Loss: 0.00031092483550310135
+[600/1000] Loss: 0.00021792018378619105
+[700/1000] Loss: 0.00019898920436389744
+[800/1000] Loss: 0.0001652887585805729
 Intermediate model save at reward_induced/models/encoder/encoder_VertPosReward_800.pt
-[900/1000] Loss: 0.00029988805181346834
-[1000/1000] Loss: 0.00024691945873200893
-Loss plot saved at reward_induced/logs/encoder_VertPosReward.png
+[900/1000] Loss: 0.0001477628102293238
+[1000/1000] Loss: 0.00014303305943030864
+Loss plot saved at reward_induced/logs/encoder/encoder_VertPosReward.png
 Final model saved at reward_induced/models/encoder/encoder_VertPosReward_final.pt
 Training complete.

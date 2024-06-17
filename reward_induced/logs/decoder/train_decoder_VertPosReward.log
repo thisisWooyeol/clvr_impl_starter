@@ -1,0 +1,25 @@
+[INFO] Training State Decoder on device: cuda
+[INFO] Training with the following configuration:
+        - Input shape: (3,64,64)
+        - Number of frames: 1
+        - Number of future frames: 29
+        - Reward types: ['vertical_position']
+        - Number of iterations: 1000
+        - Shapes per trajectory: 1
+        - Batch size: 64
+        - Encoder loaded from: reward_induced/models/encoder/encoder_VertPosReward_final.pt
+[100/1000] Loss: 0.061079174280166626
+[200/1000] Loss: 0.0532255545258522
+[300/1000] Loss: 0.0526958703994751
+[400/1000] Loss: 0.05220111459493637
+Intermediate model save at reward_induced/models/decoder/decoder_VertPosReward_400.pt
+[500/1000] Loss: 0.05147082731127739
+[600/1000] Loss: 0.05043919011950493
+[700/1000] Loss: 0.05041578784584999
+[800/1000] Loss: 0.04957428202033043
+Intermediate model save at reward_induced/models/decoder/decoder_VertPosReward_800.pt
+[900/1000] Loss: 0.0489647351205349
+[1000/1000] Loss: 0.0484524741768837
+Loss plot saved at reward_induced/logs/decoder/decoder_VertPosReward.png
+Final model saved at reward_induced/models/decoder/decoder_VertPosReward_final.pt
+Training complete.
