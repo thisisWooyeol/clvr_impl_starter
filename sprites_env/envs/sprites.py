@@ -1,5 +1,5 @@
-import gym
-from gym.spaces import Box
+import gymnasium as gym
+from gymnasium.spaces import Box
 import numpy as np
 import cv2
 import os
@@ -99,7 +99,7 @@ class SpritesEnv(gym.Env):
         state = self._clip(self._forward(state))
         return state[:, :self._n_dim].copy(), state
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.ep_len = 0
         self.distractor_shape_idx_list = np.random.choice(np.arange(2, len(self.SHAPES)), size=self.n_distractors)
         self.all_idxs = np.array(self.base_shape_idx_list + list(self.distractor_shape_idx_list))
@@ -114,12 +114,13 @@ class SpritesEnv(gym.Env):
             state = min_value + state * span
         pos_state, self._state = self.forward(state)
         im = self._render(np.expand_dims(pos_state, 0), self.shapes).squeeze(0)
-        return im / 255
+        info = {}
+        return im / 255, info
 
     def seed(self, seed=None):
         np.random.seed(seed)
 
-    def step(self, action):
+    def step(self, action, **kwargs):
         vel = np.array(action) * self.max_speed
         state = self._state.copy()
         state[0,2:] = vel
@@ -129,10 +130,11 @@ class SpritesEnv(gym.Env):
         reward = self._reward(self._state)
 
         self.ep_len += 1
-        done = (self.ep_len >= self.max_ep_len)
+        terminated = (self.ep_len >= self.max_ep_len)
+        truncated = False
         info = {}
 
-        return im / 255, reward, done, info
+        return im / 255, reward, terminated, truncated, info
 
     def _reward(self, state):
         agent_pos = state[0, :2]
@@ -187,13 +189,13 @@ class SpritesStateEnv(SpritesEnv):
                 shape=((self.n_distractors + 2) * self._n_dim, ),
                 dtype=np.float32)
 
-    def reset(self):
-        super().reset()
-        return self._state[:, :self._n_dim].copy().flatten()
+    def reset(self, **kwargs):
+        _, info = super().reset()
+        return self._state[:, :self._n_dim].copy().flatten(), info
 
-    def step(self, action):
-        _, reward, done, info = super().step(action)
-        return self._state[:, :self._n_dim].copy().flatten(), reward, done, info
+    def step(self, action, **kwargs):
+        _, reward, terminated, truncated, info = super().step(action)
+        return self._state[:, :self._n_dim].copy().flatten(), reward, terminated, truncated, info
 
 
 class SpritesRepelEnv(SpritesEnv):
@@ -218,5 +220,5 @@ if __name__  == '__main__':
     env.set_config(data_spec)
     obs = env.reset()
     cv2.imwrite("test_rl.png", 255 * np.expand_dims(obs, -1))
-    obs, reward, done, info = env.step([0, 0])
+    obs, reward, terminated, truncated, info = env.step([0, 0])
     cv2.imwrite("test_rl_1.png", 255 * np.expand_dims(obs, -1))
