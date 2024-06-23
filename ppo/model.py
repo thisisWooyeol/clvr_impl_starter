@@ -68,6 +68,10 @@ class MLPActorCritic(nn.Module):
         self.action_var = torch.full((action_dim,), action_std**2).to(device)
 
     def get_action(self, obs):
+        """
+        Get action from the policy network given observation
+        Usage: Rollout phase
+        """
         if self.encoder is not None:
             obs = self.encoder(obs)
         action_mean = self.actor(obs)
@@ -78,4 +82,21 @@ class MLPActorCritic(nn.Module):
         action_logprob = dist.log_prob(action)
         state_value = self.critic(obs)
 
-        return action.detach(), action_logprob.detach(), state_value.detach()
+        return action.detach(), action_logprob.detach(), state_value.squeeze(-1).detach()
+
+    def evaluate(self, obs, action):
+        """
+        Evaluate actions given observation
+        Usage: Training phase
+        """
+        if self.encoder is not None:
+            obs = self.encoder(obs)
+        action_mean = self.actor(obs)
+        cov_mat = torch.diag(self.action_var).unsqueeze(0)
+        dist = torch.distributions.MultivariateNormal(action_mean, cov_mat)
+
+        action_logprob = dist.log_prob(action)
+        dist_entropy = dist.entropy()
+        state_value = self.critic(obs)
+
+        return action_logprob, state_value.squeeze(-1), dist_entropy
