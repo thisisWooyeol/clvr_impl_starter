@@ -12,19 +12,23 @@ from reward_induced.src.reward_predictor import RewardPredictor, ImageEncoder
 
 class RolloutBuffer:
     def __init__(self, n_steps, n_envs, obs_shape, action_shape, device):
-        self.buffer_len = n_steps // n_envs
+        self.n_steps = n_steps
         self.current_step = 0
-        self.obs = torch.zeros((self.buffer_len + 1, n_envs, *obs_shape), dtype=torch.float32).to(device)
-        self.actions = torch.zeros((self.buffer_len, n_envs, *action_shape), dtype=torch.float32).to(device)
-        self.rewards = np.zeros((self.buffer_len, n_envs), dtype=np.float32)
-        self.terminals = np.zeros((self.buffer_len, n_envs), dtype=np.float32)
+        self.obs = torch.zeros((self.n_steps + 1, n_envs, *obs_shape), dtype=torch.float32).to(device)
+        self.actions = torch.zeros((self.n_steps, n_envs, *action_shape), dtype=torch.float32).to(device)
+        self.action_logprobs = torch.zeros((self.n_steps, n_envs), dtype=torch.float32).to(device)
+        self.state_values = torch.zeros((self.n_steps, n_envs), dtype=torch.float32).to(device)
+        self.rewards = np.zeros((self.n_steps, n_envs), dtype=np.float32)
+        self.terminals = np.zeros((self.n_steps, n_envs), dtype=np.float32)
 
-    def append(self, obs, action, reward, terminal):
-        if self.current_step == self.buffer_len:
+    def append(self, obs, action, action_logprob, state_value, reward, terminal):
+        if self.current_step == self.n_steps:
             self._append_last_obs(obs)
         else:
             self.obs[self.current_step] = obs
             self.actions[self.current_step] = action
+            self.action_logprobs[self.current_step] = action_logprob
+            self.state_values[self.current_step] = state_value
             self.rewards[self.current_step] = reward
             self.terminals[self.current_step] = terminal
             self.current_step += 1
@@ -36,6 +40,8 @@ class RolloutBuffer:
         self.current_step = 0
         self.obs = torch.zeros_like(self.obs)
         self.actions = torch.zeros_like(self.actions)
+        self.action_logprobs = torch.zeros_like(self.action_logprobs)
+        self.state_values = torch.zeros_like(self.state_values)
         self.rewards = np.zeros_like(self.rewards)
         self.terminals = np.zeros_like(self.terminals)
 
@@ -81,6 +87,7 @@ class PPO(nn.Module):
             learning_rate: float = 3e-4,
             n_steps: int = 2048,
             batch_size: int = 64,
+            n_epochs: int = 10,
             gamma: float = 0.99,
             clip_range: float = 0.2,
             tensorboard_log: str = None,
@@ -103,6 +110,7 @@ class PPO(nn.Module):
         self.learning_rate = learning_rate
         self.n_steps = n_steps
         self.batch_size = batch_size
+        self.n_epochs = n_epochs
         self.gamma = gamma
         self.clip_range = clip_range
         self.tensorboard_log = tensorboard_log
@@ -156,6 +164,69 @@ class PPO(nn.Module):
             repr_dim = self.envs.single_observation_space.shape[0]
             return MLPActorCritic(repr_dim, self.hidden_size, action_dim, encoder=encoder)
         
+    def collect_rollouts(self, buffer: RolloutBuffer):
+        obs, _ = self.envs.reset(seed=self.seed)
+        for _ in range(self.n_steps):
+            obs = torch.FloatTensor(obs).to(self.device)
+            action, action_logprob, state_value = self.policy.get_action(obs)
+
+            new_obs, reward, terminated, _, _ = self.envs.step(action.cpu().numpy())
+            buffer.append(obs, action, action_logprob, state_value, reward, terminated)
+
+            obs = new_obs
+        # Last observation
+        buffer.append(torch.FloatTensor(obs), None, None, None, None, None)
+
+    def update(self, buffer: RolloutBuffer):
+        # FIXME: first use reward-to-go, then use GAE
+        rewards = torch.from_numpy(buffer.rewards).to(self.device)
+        is_terminals = torch.from_numpy(buffer.terminals).to(self.device)
+        advantages = torch.zeros_like(rewards).to(self.device)
+
+        # Compute rewards-to-go
+        for t in reversed(range(self.n_steps - 1)):
+            rewards[t] += self.gamma * rewards[t + 1] * (1 - is_terminals[t])
+        # Normalize rewards
+        rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-5)
+        # Compute advantages
+        advantages = rewards - buffer.state_values.squeeze(-1)
+
+
+        # FIXME: not a correct update implementation
+        for _ in range(self.n_epochs):
+            for indices in range(0, self.n_steps, self.batch_size):
+                batch_indices = slice(indices, indices + self.batch_size)
+                obs_batch = buffer.obs[batch_indices]
+                action_batch = buffer.actions[batch_indices]
+                old_action_logprobs = buffer.action_logprobs[batch_indices]
+                old_state_values = buffer.state_values[batch_indices]  # TODO: is actually used for GAE 
+                returns = rewards[batch_indices]
+                advs = advantages[batch_indices]
+
+                # Evaluate old actions
+                action_logprobs, state_values, dist_entropy = self.policy.evaluate(obs_batch, action_batch)
+
+                # Compute the ratio between old and new actions
+                ratios = torch.exp(action_logprobs - old_action_logprobs)
+
+                # Compute surrogate loss
+                surr1 = ratios * advs
+                surr2 = torch.clamp(ratios, 1 - self.clip_range, 1 + self.clip_range) * advs
+                actor_loss = -torch.min(surr1, surr2).mean()
+
+                # Compute value loss
+                critic_loss = (state_values - returns).pow(2).mean()
+
+                # Compute total loss
+                loss = actor_loss + 0.5 * critic_loss - 0.01 * dist_entropy.mean()
+
+                if indices % 100 == 0:
+                    print(f'Actor loss: {actor_loss}, Critic loss: {critic_loss}, Total loss: {loss}')
+
+                # Optimize the model
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
     def learn(
             self, 
@@ -166,25 +237,14 @@ class PPO(nn.Module):
             progress_bar: bool = False
     ):
         self.policy.to(self.device)
+        self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
         buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, (4,), self.envs.single_action_space.shape, self.device)
 
-        obs, _ = self.envs.reset(seed=self.seed)
+        # obs, _ = self.envs.reset(seed=self.seed)
 
-        for update in range(total_timesteps // self.n_steps):
-            # Rollout phase
-            for _ in range(self.n_steps // self.envs.num_envs):
-                obs = torch.FloatTensor(obs).to(self.device)
-                action, action_logprob, state_value = self.policy.get_action(obs)
-
-                new_obs, reward, terminated, _, _ = self.envs.step(action.cpu().numpy())
-                buffer.append(obs, action, reward, terminated)
-
-                obs = new_obs
-                
-            # Last observation
-            buffer.append(torch.FloatTensor(obs), None, None, None)
-
-            print(f"update #{update + 1}: ", buffer.obs[0], buffer.obs.shape, buffer.actions[0], buffer.actions.shape, buffer.terminals)
+        for update in range(total_timesteps // (self.n_steps * self.envs.num_envs)):
+            self.collect_rollouts(buffer)
+            self.update(buffer)
             buffer.reset()
 
         self.envs.close()
@@ -192,5 +252,5 @@ class PPO(nn.Module):
 
 
 if __name__ == '__main__':
-    ppo = PPO('oracle', 'SpritesState-v0', num_envs=4)
-    ppo.learn(total_timesteps=9192, log_interval=100)
+    ppo = PPO('oracle', 'SpritesState-v0', num_envs=2)
+    ppo.learn(total_timesteps=2**15, log_interval=100)
