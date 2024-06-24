@@ -1,0 +1,290 @@
+[INFO] Learning Configuration:
+            Policy
+                - Policy type:      oracle
+                - Policy network:   MLPActorCritic(
+  (actor): Sequential(
+    (0): Linear(in_features=4, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=2, bias=True)
+    (3): Tanh()
+  )
+  (critic): Sequential(
+    (0): Linear(in_features=4, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=1, bias=True)
+  )
+)
+            Environment
+                - Num envs:         4
+            Rollout
+                - Rollout Steps:    2048
+            Training
+                - Total timesteps:  1048576
+                - N epochs:         10
+                - Batch size:       64
+                - gamma (discount): 0.99
+                - clip range:       0.2
+                - Optimizer:        Adam
+                - Learning rate:    0.0003
+            Device
+                - Device:           cuda
+            Verbosity
+                - Verbose level:    1
+                - Log interval:     10
+        
+[INFO] Update 0
+    (Validation) Returns: 26.611602119747943 +/- 3.446136254973792
+[INFO] Update 1
+    (Validation) Returns: 26.350598186277345 +/- 3.10982224736757
+[INFO] Update 2
+    (Validation) Returns: 25.679939837322745 +/- 3.3378245916004974
+[INFO] Update 3
+    (Validation) Returns: 27.344131181808866 +/- 2.8778447997759327
+[INFO] Update 4
+    (Validation) Returns: 26.150989003680785 +/- 3.9581848436656824
+[INFO] Update 5
+    (Validation) Returns: 27.098616784918544 +/- 3.8640610717348287
+[INFO] Update 6
+    (Validation) Returns: 28.69942582850668 +/- 3.67120815300618
+[INFO] Update 7
+    (Validation) Returns: 27.728354977631305 +/- 3.4486636798028036
+[INFO] Update 8
+    (Validation) Returns: 28.294460770458954 +/- 3.0483108284145195
+[INFO] Update 9
+    (Validation) Returns: 28.231880117019365 +/- 2.892222857837573
+[INFO] Update 10
+    (Validation) Returns: 27.679701781180633 +/- 2.7829883679266603
+[INFO] Update 11
+    (Validation) Returns: 28.92924152263198 +/- 3.4697413414875586
+[INFO] Update 12
+    (Validation) Returns: 29.7728245285892 +/- 3.1513084313699604
+[INFO] Update 13
+    (Validation) Returns: 29.119161582288655 +/- 2.5013071866815575
+[INFO] Update 14
+    (Validation) Returns: 29.612053549389316 +/- 2.655952655337041
+[INFO] Update 15
+    (Validation) Returns: 29.808481022956563 +/- 3.1762650302809523
+[INFO] Update 16
+    (Validation) Returns: 28.886733236779982 +/- 2.873687607723261
+[INFO] Update 17
+    (Validation) Returns: 30.248345234010788 +/- 2.507139384692756
+[INFO] Update 18
+    (Validation) Returns: 29.905083486032332 +/- 3.1719803327172955
+[INFO] Update 19
+    (Validation) Returns: 29.76449326242325 +/- 3.221631097959154
+[INFO] Update 20
+    (Validation) Returns: 29.32508226654287 +/- 3.040746716078635
+[INFO] Update 21
+    (Validation) Returns: 30.266822433653125 +/- 2.555798646096073
+[INFO] Update 22
+    (Validation) Returns: 29.99379369455658 +/- 2.62376617237299
+[INFO] Update 23
+    (Validation) Returns: 29.284348175588242 +/- 2.5886067183270836
+[INFO] Update 24
+    (Validation) Returns: 28.514535409704347 +/- 2.8599383966499596
+[INFO] Update 25
+    (Validation) Returns: 29.188697517636946 +/- 2.4715220781205645
+[INFO] Update 26
+    (Validation) Returns: 29.820080560346604 +/- 3.0928689539779852
+[INFO] Update 27
+    (Validation) Returns: 30.334482629380567 +/- 2.766081711302221
+[INFO] Update 28
+    (Validation) Returns: 30.66734346792082 +/- 2.1817826675047844
+[INFO] Update 29
+    (Validation) Returns: 30.063894451561964 +/- 2.5729039624172882
+[INFO] Update 30
+    (Validation) Returns: 30.13144462555826 +/- 2.40548477431627
+[INFO] Update 31
+    (Validation) Returns: 30.007301456879752 +/- 3.1892382674581725
+[INFO] Update 32
+    (Validation) Returns: 31.112874060844877 +/- 2.2004678447015857
+[INFO] Update 33
+    (Validation) Returns: 30.950244793798298 +/- 2.109289329536216
+[INFO] Update 34
+    (Validation) Returns: 31.38669125060207 +/- 2.3192457771884953
+[INFO] Update 35
+    (Validation) Returns: 32.14860012456246 +/- 1.942584699048952
+[INFO] Update 36
+    (Validation) Returns: 30.01902502117373 +/- 2.0154112681535707
+[INFO] Update 37
+    (Validation) Returns: 31.49897735279604 +/- 2.0171159325666146
+[INFO] Update 38
+    (Validation) Returns: 31.66258681938957 +/- 2.187176822703251
+[INFO] Update 39
+    (Validation) Returns: 31.637630809328765 +/- 1.8709891691445122
+[INFO] Update 40
+    (Validation) Returns: 31.59151619679679 +/- 2.234761910809
+[INFO] Update 41
+    (Validation) Returns: 31.05575986306703 +/- 1.750290799138124
+[INFO] Update 42
+    (Validation) Returns: 31.709282908020374 +/- 1.543387955409669
+[INFO] Update 43
+    (Validation) Returns: 31.030785861560854 +/- 1.5787972944005804
+[INFO] Update 44
+    (Validation) Returns: 32.04844689169403 +/- 1.9197321916271355
+[INFO] Update 45
+    (Validation) Returns: 31.775470430683022 +/- 1.7239499256018052
+[INFO] Update 46
+    (Validation) Returns: 31.833464311649728 +/- 1.9090920463795575
+[INFO] Update 47
+    (Validation) Returns: 31.6089228634393 +/- 1.6592708183137683
+[INFO] Update 48
+    (Validation) Returns: 31.983020417109095 +/- 1.8089319320512354
+[INFO] Update 49
+    (Validation) Returns: 31.502494123651054 +/- 2.0753349145652034
+[INFO] Update 50
+    (Validation) Returns: 31.7797528448624 +/- 2.467188578763722
+[INFO] Update 51
+    (Validation) Returns: 31.92907492622117 +/- 1.9239847236414314
+[INFO] Update 52
+    (Validation) Returns: 31.868261141027936 +/- 1.955934099331961
+[INFO] Update 53
+    (Validation) Returns: 31.957868263437557 +/- 1.8814705954322914
+[INFO] Update 54
+    (Validation) Returns: 32.02701098156204 +/- 1.9991194382674426
+[INFO] Update 55
+    (Validation) Returns: 31.78908395080619 +/- 1.7897915295057292
+[INFO] Update 56
+    (Validation) Returns: 32.05307207708346 +/- 2.0140169881870973
+[INFO] Update 57
+    (Validation) Returns: 32.63661369779331 +/- 1.6276687163857377
+[INFO] Update 58
+    (Validation) Returns: 32.46115630919131 +/- 1.9626932585308148
+[INFO] Update 59
+    (Validation) Returns: 32.694763535548574 +/- 1.6535889888212216
+[INFO] Update 60
+    (Validation) Returns: 32.23088179272529 +/- 1.5335915953984636
+[INFO] Update 61
+    (Validation) Returns: 32.51452273861853 +/- 1.4059884715589004
+[INFO] Update 62
+    (Validation) Returns: 32.12648902835544 +/- 1.6488413100956292
+[INFO] Update 63
+    (Validation) Returns: 32.459208654556036 +/- 1.7756781834059538
+[INFO] Update 64
+    (Validation) Returns: 32.49370926695282 +/- 1.5337930540972218
+[INFO] Update 65
+    (Validation) Returns: 32.69574990588326 +/- 1.6644602742922892
+[INFO] Update 66
+    (Validation) Returns: 32.99044948722674 +/- 1.754709142795615
+[INFO] Update 67
+    (Validation) Returns: 32.33884867964527 +/- 1.7250880069494632
+[INFO] Update 68
+    (Validation) Returns: 32.951281967198824 +/- 1.571757701253812
+[INFO] Update 69
+    (Validation) Returns: 33.30274578227073 +/- 1.722317774195416
+[INFO] Update 70
+    (Validation) Returns: 33.09585487495635 +/- 1.2975385059054545
+[INFO] Update 71
+    (Validation) Returns: 33.25150773267208 +/- 1.8526143758472433
+[INFO] Update 72
+    (Validation) Returns: 32.67933784621918 +/- 1.7962977815154102
+[INFO] Update 73
+    (Validation) Returns: 32.49394503519052 +/- 1.74814781597248
+[INFO] Update 74
+    (Validation) Returns: 33.3594785382142 +/- 1.897383917242271
+[INFO] Update 75
+    (Validation) Returns: 32.88848317786482 +/- 1.8680056793542472
+[INFO] Update 76
+    (Validation) Returns: 33.109423501429106 +/- 1.4435332802880294
+[INFO] Update 77
+    (Validation) Returns: 33.254633154093675 +/- 1.721945112181773
+[INFO] Update 78
+    (Validation) Returns: 33.13506769538458 +/- 1.5007889566625328
+[INFO] Update 79
+    (Validation) Returns: 32.86643080465492 +/- 1.6588080577142663
+[INFO] Update 80
+    (Validation) Returns: 32.88450368646319 +/- 1.558735925552445
+[INFO] Update 81
+    (Validation) Returns: 33.275600273259286 +/- 1.4324530027990239
+[INFO] Update 82
+    (Validation) Returns: 33.812888935184915 +/- 1.648786524328499
+[INFO] Update 83
+    (Validation) Returns: 33.21553702936652 +/- 1.4368394324916347
+[INFO] Update 84
+    (Validation) Returns: 33.28262043994564 +/- 1.2919884982874608
+[INFO] Update 85
+    (Validation) Returns: 32.95833824672907 +/- 1.2669518087262643
+[INFO] Update 86
+    (Validation) Returns: 33.02099466732098 +/- 1.3085275104305807
+[INFO] Update 87
+    (Validation) Returns: 33.21607935506483 +/- 1.4051735478304894
+[INFO] Update 88
+    (Validation) Returns: 33.13219928057687 +/- 1.5433194134680646
+[INFO] Update 89
+    (Validation) Returns: 33.11831371361098 +/- 1.7291231978397796
+[INFO] Update 90
+    (Validation) Returns: 33.22933002569168 +/- 1.7759180136184451
+[INFO] Update 91
+    (Validation) Returns: 33.549385940658794 +/- 1.5607627850911854
+[INFO] Update 92
+    (Validation) Returns: 33.27296328898011 +/- 1.3249735407094516
+[INFO] Update 93
+    (Validation) Returns: 33.06880836924023 +/- 1.6105040469963292
+[INFO] Update 94
+    (Validation) Returns: 33.06041959179542 +/- 1.3367098604985115
+[INFO] Update 95
+    (Validation) Returns: 33.29884760471314 +/- 1.3452892648888783
+[INFO] Update 96
+    (Validation) Returns: 33.37845260960183 +/- 1.558303784203273
+[INFO] Update 97
+    (Validation) Returns: 33.58362747002415 +/- 1.6754027442542037
+[INFO] Update 98
+    (Validation) Returns: 33.15500442146575 +/- 1.753357471135698
+[INFO] Update 99
+    (Validation) Returns: 33.33063985726072 +/- 1.2507567137782891
+[INFO] Update 100
+    (Validation) Returns: 33.20886087250815 +/- 1.6432163106267887
+[INFO] Update 101
+    (Validation) Returns: 33.58980255656515 +/- 1.59446975740466
+[INFO] Update 102
+    (Validation) Returns: 33.387264522872364 +/- 1.3772975705934392
+[INFO] Update 103
+    (Validation) Returns: 33.74165327143455 +/- 1.115561738753048
+[INFO] Update 104
+    (Validation) Returns: 33.79563917106804 +/- 1.616962923938462
+[INFO] Update 105
+    (Validation) Returns: 33.57122313274134 +/- 1.3923238367734152
+[INFO] Update 106
+    (Validation) Returns: 33.47968860899012 +/- 1.9173959996385697
+[INFO] Update 107
+    (Validation) Returns: 33.57802516277021 +/- 1.5319562922862835
+[INFO] Update 108
+    (Validation) Returns: 33.52937282508576 +/- 1.5417788203674407
+[INFO] Update 109
+    (Validation) Returns: 33.607021137257945 +/- 1.1962263485957518
+[INFO] Update 110
+    (Validation) Returns: 33.84898391615203 +/- 1.74505414343193
+[INFO] Update 111
+    (Validation) Returns: 33.53913545129319 +/- 1.417705966825426
+[INFO] Update 112
+    (Validation) Returns: 33.651014234404656 +/- 1.5840425982559028
+[INFO] Update 113
+    (Validation) Returns: 33.06720168963626 +/- 1.2194988846807588
+[INFO] Update 114
+    (Validation) Returns: 33.982522195656664 +/- 1.5533742067951624
+[INFO] Update 115
+    (Validation) Returns: 34.041357691258476 +/- 1.5936967660219827
+[INFO] Update 116
+    (Validation) Returns: 34.00598691996784 +/- 1.1926402323584187
+[INFO] Update 117
+    (Validation) Returns: 33.423907159089865 +/- 1.597047240028865
+[INFO] Update 118
+    (Validation) Returns: 34.08333205343092 +/- 1.3868663668314338
+[INFO] Update 119
+    (Validation) Returns: 33.97121847628496 +/- 1.4718671336207925
+[INFO] Update 120
+    (Validation) Returns: 33.919053037383385 +/- 1.3994215012194429
+[INFO] Update 121
+    (Validation) Returns: 33.825390270189835 +/- 1.323681187215907
+[INFO] Update 122
+    (Validation) Returns: 33.93354495562299 +/- 1.8190558428565058
+[INFO] Update 123
+    (Validation) Returns: 33.849820884679744 +/- 1.4789894866355018
+[INFO] Update 124
+    (Validation) Returns: 34.03528718830408 +/- 1.5549953246307626
+[INFO] Update 125
+    (Validation) Returns: 33.951332062095915 +/- 1.5013237478917563
+[INFO] Update 126
+    (Validation) Returns: 34.01042916867446 +/- 1.3651344365954683
+[INFO] Update 127
+    (Validation) Returns: 34.06932637283033 +/- 1.2210679235880357
