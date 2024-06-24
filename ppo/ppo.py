@@ -184,8 +184,7 @@ class PPO(nn.Module):
         elif policy_type == 'reward-prediction' \
             or policy_type == 'reward-prediction-finetune':
             _reward_predictor = RewardPredictor(self.image_shape, 1, 29)
-            # TODO: use general method to load encoder from reward prediction task
-            _reward_predictor.load_state_dict(torch.load('reward_induced/models/encoder/encoder_dist0_final.pt'))
+            _reward_predictor.load_state_dict(torch.load(f'reward_induced/models/encoder/encoder_dist{self.env_name[-1]}_final.pt'))
             image_encoder = _reward_predictor.image_encoder
             if policy_type == 'reward-prediction':
                 image_encoder.requires_grad_(False)
@@ -198,7 +197,7 @@ class PPO(nn.Module):
     def _setup_actor_critic(self, policy_type, encoder):
         action_dim = self.envs.single_action_space.shape[0]
         if policy_type == 'cnn':
-            repr_dim = (self.image_shape[-1] // 8 - 1) ** 2 * self.encoder.CHANNELS
+            repr_dim = ((self.image_shape[-1] // 8 - 1) ** 2) * encoder.CHANNELS
             return MLPActorCritic(repr_dim, self.hidden_size * 2, action_dim, encoder=encoder)
         elif policy_type == 'image-scratch' \
             or policy_type == 'image-reconstruction' \
@@ -307,7 +306,7 @@ class PPO(nn.Module):
     ):
         self.policy.to(self.device)
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
-        buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, (4,), self.envs.single_action_space.shape, self.device)
+        buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, self.envs.single_observation_space.shape, self.envs.single_action_space.shape, self.device)
 
         logger = _setup_logger(f'ppo/logs/{self.policy_type}/{self.policy_type}-{self.env_name}.log', self.verbose)
         logger.info(f"""[INFO] Learning Configuration:
@@ -377,5 +376,5 @@ def _setup_logger(log_file_path, verbose):
 
 
 if __name__ == '__main__':
-    ppo = PPO('oracle', 'SpritesState-v0', num_envs=4, verbose=1)
-    ppo.learn(total_timesteps=2**20, log_interval=10)
+    ppo = PPO('cnn', 'Sprites-v0', num_envs=4, verbose=1)
+    ppo.learn(total_timesteps=2**22, log_interval=10)

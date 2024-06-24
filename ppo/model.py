@@ -12,21 +12,26 @@ class CNN(nn.Module):
     """
     def __init__(self):
         super(CNN, self).__init__()
-        # assume input image with shape (3, 64, 64)
+        # assume input image with shape (B, L, 3, 64, 64)
         _CHANNELS = 16
         self.CHANNELS = _CHANNELS
 
         self.model = nn.Sequential(
-            nn.Conv2d(3, _CHANNELS, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(3, _CHANNELS, kernel_size=3, stride=2),
             nn.ReLU(),
-            nn.Conv2d(_CHANNELS, _CHANNELS, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(_CHANNELS, _CHANNELS, kernel_size=3, stride=2),
             nn.ReLU(),
-            nn.Conv2d(_CHANNELS, _CHANNELS, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(_CHANNELS, _CHANNELS, kernel_size=3, stride=2),
             nn.Flatten()
         )
 
     def forward(self, x):
-        return self.model(x)
+        # x: (B, L, 3, 64, 64)
+        B = x.shape[0]
+        L = x.shape[1]
+        x = x.view(B*L, 3, 64, 64)
+
+        return self.model(x).view(B, L, -1)
     
 
 class MLPActorCritic(nn.Module):
@@ -55,9 +60,17 @@ class MLPActorCritic(nn.Module):
         """
         Get action from the policy network given observation
         Usage: Rollout phase
+
+        Args:
+            obs: observation of shape (num_envs, H, W)
+            action: action of shape (num_envs, action_dim)
         """
         if self.encoder is not None:
-            obs = self.encoder(obs)
+            # unsqueeze as encoder expects (B, L, C, H, W)
+            obs = torch.stack([obs] * 3, dim=-3)
+            obs = self.encoder(obs.unsqueeze(dim=1))
+            # squeeze as encoder returns (B, L, C)
+            obs = obs.squeeze(dim=1)
         action_mean = self.actor(obs)
         cov_mat = torch.diag(self.action_var).unsqueeze(0)
         dist = torch.distributions.MultivariateNormal(action_mean, cov_mat)
@@ -72,8 +85,13 @@ class MLPActorCritic(nn.Module):
         """
         Evaluate actions given observation
         Usage: Training phase
+
+        Args:
+            obs: batched observation of shape (B, num_envs, H, W)
+            action: batched action of shape (B, num_envs, action_dim)
         """
         if self.encoder is not None:
+            obs = torch.stack([obs] * 3, dim=-3)
             obs = self.encoder(obs)
         action_mean = self.actor(obs)
         cov_mat = torch.diag(self.action_var).unsqueeze(0)
