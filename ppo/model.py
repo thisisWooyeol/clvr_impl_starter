@@ -29,22 +29,6 @@ class CNN(nn.Module):
         return self.model(x)
     
 
-class MLP(nn.Module):
-    """
-    2-layer MLP for PPO implementation
-    """
-    def __init__(self, in_features, hidden_size, out_features):
-        super(MLP, self).__init__()
-        self.mlp = nn.Sequential(
-            nn.Linear(in_features, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, out_features)
-        )
-
-    def forward(self, x):
-        return self.mlp(x)
-
-
 class MLPActorCritic(nn.Module):
     """
     Actor-Critic agent with 2-layer MLPs

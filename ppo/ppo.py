@@ -7,7 +7,7 @@ import sprites_env
 from typing import Union
 import logging
 
-from .model import CNN, MLP, MLPActorCritic
+from .model import CNN, MLPActorCritic
 from reward_induced.src.reward_predictor import RewardPredictor, ImageEncoder
 
 
@@ -134,9 +134,10 @@ class PPO(nn.Module):
         super(PPO, self).__init__()
         # make gym environment
         self._policy_env_sanity_check(policy_type, env_name)
+        self.env_name = env_name  # only use for logging purposes
         self.envs = gym.make_vec(env_name, num_envs=num_envs)
 
-        # By default, use image shape (3, 64, 64), and 64 hidden states
+        # By default, use image shape (3, 64, 64), and 32 hidden states
         self.image_shape = (3, 64, 64)
         self.hidden_size = 32
 
@@ -175,17 +176,20 @@ class PPO(nn.Module):
             return ImageEncoder(self.image_shape, self.hidden_size)
         elif policy_type == 'image-reconstruction' \
             or policy_type == 'image-reconstruction-finetune':
-            return ImageEncoder(self.image_shape, self.hidden_size)
+            image_encoder = ImageEncoder(self.image_shape, self.hidden_size)
             # TODO: load encoder from image reconstruction task
+            if policy_type == 'image-reconstruction':
+                image_encoder.requires_grad_(False)
+            return image_encoder
         elif policy_type == 'reward-prediction' \
             or policy_type == 'reward-prediction-finetune':
             _reward_predictor = RewardPredictor(self.image_shape, 1, 29)
             # TODO: use general method to load encoder from reward prediction task
             _reward_predictor.load_state_dict(torch.load('reward_induced/models/encoder/encoder_dist0_final.pt'))
-            _image_encoder = _reward_predictor.image_encoder
+            image_encoder = _reward_predictor.image_encoder
             if policy_type == 'reward-prediction':
-                _image_encoder.requires_grad_(False)
-            return _image_encoder
+                image_encoder.requires_grad_(False)
+            return image_encoder
         elif policy_type == 'oracle':
             return None
         else:
@@ -248,7 +252,6 @@ class PPO(nn.Module):
 
         return returns
         
-
     def update(self, buffer: RolloutBuffer, logger: logging.Logger):
         returns, advantages = buffer.compute_returns(self.gamma, self.gae_lambda)
         if self.normalize_advantage:
@@ -285,7 +288,6 @@ class PPO(nn.Module):
                 # Compute total loss
                 loss = actor_loss + self.ent_coef * critic_loss - self.ent_coef * dist_entropy.mean()
 
-                # Optimize the model
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
@@ -307,13 +309,15 @@ class PPO(nn.Module):
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
         buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, (4,), self.envs.single_action_space.shape, self.device)
 
-        logger = _setup_logger(f'ppo/logs/{tb_log_name}.log', self.verbose)
+        logger = _setup_logger(f'ppo/logs/{self.policy_type}/{self.policy_type}-{self.env_name}.log', self.verbose)
         logger.info(f"""[INFO] Learning Configuration:
             Policy
                 - Policy type:      {self.policy_type}
                 - Policy network:   {self.policy}
             Environment
+                - Env name:         {self.env_name}
                 - Num envs:         {self.envs.num_envs}
+                - Spec:             {self.envs.spec}
             Rollout
                 - Rollout Steps:    {self.n_steps}
             Training
@@ -348,8 +352,8 @@ class PPO(nn.Module):
         logger.info(f'[INFO] Training finished ({total_timesteps} steps)')
 
         self.envs.close()
-        self.save(f'ppo/models/{self.policy_type}/{self.policy_type}-{total_timesteps}steps.pt')
-        logger.info(f'[INFO] Model saved at ppo/models/{self.policy_type}-{total_timesteps}steps.pt')
+        self.save(f'ppo/models/{self.policy_type}/{self.policy_type}-{self.env_name}-{total_timesteps}steps.pt')
+        logger.info(f'[INFO] Model saved at ppo/models/{self.policy_type}/{self.policy_type}-{self.env_name}-{total_timesteps}steps.pt')
 
     def save(self, path):
         torch.save(self.policy.state_dict(), path)
