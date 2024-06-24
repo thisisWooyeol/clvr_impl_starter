@@ -5,6 +5,7 @@ import numpy as np
 
 import sprites_env
 from typing import Union
+import logging
 
 from .model import CNN, MLP, MLPActorCritic
 from reward_induced.src.reward_predictor import RewardPredictor, ImageEncoder
@@ -17,7 +18,7 @@ class RolloutBuffer:
         self.obs = torch.zeros((self.n_steps + 1, n_envs, *obs_shape), dtype=torch.float32).to(device)
         self.actions = torch.zeros((self.n_steps, n_envs, *action_shape), dtype=torch.float32).to(device)
         self.action_logprobs = torch.zeros((self.n_steps, n_envs), dtype=torch.float32).to(device)
-        self.state_values = torch.zeros((self.n_steps, n_envs), dtype=torch.float32).to(device)
+        self.state_values = torch.zeros((self.n_steps + 1, n_envs), dtype=torch.float32).to(device)
         self.rewards = np.zeros((self.n_steps, n_envs), dtype=np.float32)
         self.terminals = np.zeros((self.n_steps, n_envs), dtype=np.float32)
 
@@ -25,16 +26,16 @@ class RolloutBuffer:
         if self.current_step == self.n_steps:
             self._append_last_obs(obs)
         else:
-            self.obs[self.current_step] = obs
-            self.actions[self.current_step] = action
-            self.action_logprobs[self.current_step] = action_logprob
-            self.state_values[self.current_step] = state_value
+            self.obs[self.current_step].copy_(obs)
+            self.actions[self.current_step].copy_(action)
+            self.action_logprobs[self.current_step].copy_(action_logprob)
+            self.state_values[self.current_step].copy_(state_value)
             self.rewards[self.current_step] = reward
             self.terminals[self.current_step] = terminal
             self.current_step += 1
 
     def _append_last_obs(self, obs):
-        self.obs[-1] = obs
+        self.obs[-1].copy_(obs)
 
     def reset(self):
         self.current_step = 0
@@ -67,29 +68,36 @@ class PPO(nn.Module):
         (args are referred from the Stable Baselines PPO implementation)
 
         policy: str,                            type of policy network (baseline)
-        env: str,                               the environment to learn from
+        env_name: str,                          the environment to learn from
         num_envs: int,                          number of environments to run in parallel
         learning_rate: float,                   learning rate
         n_steps: int,                           number of steps to run for each environment per update
         batch_size: int,                        minibatch size
+        n_epochs: int,                          number of epochs to update the policy
         gamma: float,                           discount factor
+        gae_lambda: float,                      factor for trade-off of bias vs variance for Generalized Advantage Estimator
         clip_range: float,                      clip range from (0, 1)
+        ent_coef: float,                        entropy coefficient
+        vf_coef: float,                         value function coefficient
         tensorboard_log: str | None,            the log location for tensorboard (if None, no logging)
-        verbose: int,                           the verbosity level: 0 none, 1 training information, 2 debug
+        verbose: int,                           the verbosity level: 0 warning, 1 info, 2 debug
         seed: int | None,                       Seed for the pseudo-random generators
         device: device | str,                   Device (cpu, cuda, ...) on which the code should be run. 
     """
     def __init__(
             self,
             policy_type: str,
-            env: str,
+            env_name: str,
             num_envs: int = 2,
             learning_rate: float = 3e-4,
             n_steps: int = 2048,
             batch_size: int = 64,
             n_epochs: int = 10,
             gamma: float = 0.99,
+            gae_lambda: float = 0.95,
             clip_range: float = 0.2,
+            ent_coef: float = 0.01,
+            vf_coef: float = 0.5,
             tensorboard_log: str = None,
             verbose: int = 0,
             seed: int = None,
@@ -97,13 +105,14 @@ class PPO(nn.Module):
     ):
         super(PPO, self).__init__()
         # make gym environment
-        self._policy_env_sanity_check(policy_type, env)
-        self.envs = gym.make_vec(env, num_envs=num_envs)
+        self._policy_env_sanity_check(policy_type, env_name)
+        self.envs = gym.make_vec(env_name, num_envs=num_envs)
 
         # By default, use image shape (3, 64, 64), and 64 hidden states
         self.image_shape = (3, 64, 64)
         self.hidden_size = 32
 
+        self.policy_type = policy_type  # only use for logging purposes
         _encoder = self._setup_encoder(policy_type)
         self.policy = self._setup_actor_critic(policy_type, encoder=_encoder)
 
@@ -112,19 +121,23 @@ class PPO(nn.Module):
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.gamma = gamma
+        self.gae_lambda = gae_lambda
         self.clip_range = clip_range
+        self.ent_coef = ent_coef
+        self.vf_coef = vf_coef
+
         self.tensorboard_log = tensorboard_log
         self.verbose = verbose
         self.seed = seed
         self.device = device if device != 'auto' else torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     @staticmethod
-    def _policy_env_sanity_check(policy, env):
+    def _policy_env_sanity_check(policy, env_name):
         if policy == 'oracle':
-            if 'State' not in env:
-                raise ValueError(f'Invalid policy-environment combination: {policy}-{env}')
-        elif 'State' in env:
-            raise ValueError(f'Invalid policy-environment combination: {policy}-{env}')
+            if 'State' not in env_name:
+                raise ValueError(f'Invalid policy-environment combination: {policy}-{env_name}')
+        elif 'State' in env_name:
+            raise ValueError(f'Invalid policy-environment combination: {policy}-{env_name}')
 
     def _setup_encoder(self, policy_type):
         if policy_type == 'cnn':
@@ -168,16 +181,20 @@ class PPO(nn.Module):
         obs, _ = self.envs.reset(seed=self.seed)
         for _ in range(self.n_steps):
             obs = torch.FloatTensor(obs).to(self.device)
-            action, action_logprob, state_value = self.policy.get_action(obs)
+            with torch.no_grad():
+                action, action_logprob, state_value = self.policy.get_action(obs)
 
             new_obs, reward, terminated, _, _ = self.envs.step(action.cpu().numpy())
             buffer.append(obs, action, action_logprob, state_value, reward, terminated)
 
             obs = new_obs
         # Last observation
-        buffer.append(torch.FloatTensor(obs), None, None, None, None, None)
+        obs = torch.FloatTensor(obs).to(self.device)
+        with torch.no_grad():
+            _, _, state_value = self.policy.get_action(obs)
+        buffer.append(obs, None, None, state_value, None, None)
 
-    def update(self, buffer: RolloutBuffer):
+    def update(self, buffer: RolloutBuffer, logger: logging.Logger):
         # FIXME: first use reward-to-go, then use GAE
         rewards = torch.from_numpy(buffer.rewards).to(self.device)
         is_terminals = torch.from_numpy(buffer.terminals).to(self.device)
@@ -218,15 +235,17 @@ class PPO(nn.Module):
                 critic_loss = (state_values - returns).pow(2).mean()
 
                 # Compute total loss
-                loss = actor_loss + 0.5 * critic_loss - 0.01 * dist_entropy.mean()
-
-                if indices % 100 == 0:
-                    print(f'Actor loss: {actor_loss}, Critic loss: {critic_loss}, Total loss: {loss}')
+                loss = actor_loss + self.ent_coef * critic_loss - self.ent_coef * dist_entropy.mean()
 
                 # Optimize the model
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+
+            # Log
+            logger.debug(f'    actor loss:      {actor_loss.item()}')
+            logger.debug(f'    critic loss:     {critic_loss.item()}')
+            logger.debug(f'    entropy:         {dist_entropy.mean().item()}')
 
     def learn(
             self, 
@@ -240,17 +259,62 @@ class PPO(nn.Module):
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
         buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, (4,), self.envs.single_action_space.shape, self.device)
 
-        # obs, _ = self.envs.reset(seed=self.seed)
+        logger = _setup_logger(f'ppo/logs/{tb_log_name}.log', self.verbose)
+        logger.info(f"""[INFO] Learning Configuration:
+            Policy
+                - Policy type:      {self.policy_type}
+                - Policy network:   {self.policy}
+            Environment
+                - Num envs:         {self.envs.num_envs}
+            Rollout
+                - Rollout Steps:    {self.n_steps}
+            Training
+                - Total timesteps:  {total_timesteps}
+                - N epochs:         {self.n_epochs}
+                - Batch size:       {self.batch_size}
+                - gamma (discount): {self.gamma}
+                - clip range:       {self.clip_range}
+                - Optimizer:        Adam
+                - Learning rate:    {self.learning_rate}
+            Device
+                - Device:           {self.device}
+            Verbosity
+                - Verbose level:    {self.verbose}
+                - Log interval:     {log_interval}
+        """)
+
+
 
         for update in range(total_timesteps // (self.n_steps * self.envs.num_envs)):
+            logger.info(f'[INFO] Update {update}')
             self.collect_rollouts(buffer)
-            self.update(buffer)
+            self.update(buffer, logger)
             buffer.reset()
 
         self.envs.close()
+        self.save(f'ppo/models/{self.policy_type}-{total_timesteps}steps.pt')
 
+    def save(self, path):
+        torch.save(self.policy.state_dict(), path)
+
+
+
+def _setup_logger(log_file_path, verbose):
+    logger = logging.getLogger(__name__)
+    streamHandler = logging.StreamHandler()
+    fileHandler = logging.FileHandler(log_file_path, mode='w')
+    logger.addHandler(streamHandler)
+    logger.addHandler(fileHandler)
+
+    if verbose == 2:
+        logger.setLevel(logging.DEBUG)
+    elif verbose == 1:
+        logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
+    return logger
 
 
 if __name__ == '__main__':
-    ppo = PPO('oracle', 'SpritesState-v0', num_envs=2)
-    ppo.learn(total_timesteps=2**15, log_interval=100)
+    ppo = PPO('oracle', 'SpritesState-v0', num_envs=4, verbose=2)
+    ppo.learn(total_timesteps=2**20, log_interval=100)
