@@ -1,0 +1,61 @@
+[INFO] Learning Configuration:
+            Policy
+                - Policy type:      cnn
+                - Policy network:   MLPActorCritic(
+  (actor): Sequential(
+    (0): Linear(in_features=784, out_features=64, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=64, out_features=2, bias=True)
+    (3): Tanh()
+  )
+  (critic): Sequential(
+    (0): Linear(in_features=784, out_features=64, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=64, out_features=1, bias=True)
+  )
+  (encoder): CNN(
+    (model): Sequential(
+      (0): Conv2d(3, 16, kernel_size=(3, 3), stride=(2, 2))
+      (1): ReLU()
+      (2): Conv2d(16, 16, kernel_size=(3, 3), stride=(2, 2))
+      (3): ReLU()
+      (4): Conv2d(16, 16, kernel_size=(3, 3), stride=(2, 2))
+      (5): Flatten(start_dim=1, end_dim=-1)
+    )
+  )
+)
+            Environment
+                - Env name:         Sprites-v0
+                - Num envs:         4
+                - Spec:             EnvSpec(id='Sprites-v0', entry_point='sprites_env.envs.sprites:SpritesEnv', reward_threshold=None, nondeterministic=False, max_episode_steps=None, order_enforce=True, disable_env_checker=False, kwargs={'n_distractors': 0, 'num_envs': 4, 'vectorization_mode': 'sync'}, namespace=None, name='Sprites', version=0, additional_wrappers=(), vector_entry_point=None)
+            Rollout
+                - Rollout Steps:    2048
+            Training
+                - Total timesteps:  4194304
+                - N epochs:         10
+                - Batch size:       64
+                - gamma (discount): 0.99
+                - GAE lambda:       0.95
+                - clip range:       0.2
+                - Normalize adv:    True
+                - Entropy coef:     0.01
+                - Value coef:       0.5
+                - Optimizer:        Adam
+                - Learning rate:    0.0003
+            Device
+                - Device:           cuda
+            Verbosity
+                - Verbose level:    1
+                - Log interval:     10
+        
+[INFO] Update 0 (0 / 4194304 steps)
+    (Validation) Returns: 27.184844652498327 +/- 3.3325545000665753
+[INFO] Update 1 (8192 / 4194304 steps)
+    (Validation) Returns: 28.248843107494167 +/- 3.5451634945435493
+[INFO] Update 2 (16384 / 4194304 steps)
+    (Validation) Returns: 28.361203898400117 +/- 2.7299425853327746
+[INFO] Update 3 (24576 / 4194304 steps)
+    (Validation) Returns: 27.448536644821235 +/- 3.451702708058299
+[INFO] Update 4 (32768 / 4194304 steps)
+    (Validation) Returns: 29.292663108811702 +/- 3.1296769768949164
+[INFO] Update 5 (40960 / 4194304 steps)
