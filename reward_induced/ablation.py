@@ -10,7 +10,7 @@ from reward_induced.src.reward_predictor import RewardPredictor
 from reward_induced.src.state_decoder import StateDecoder
 from sprites_datagen.moving_sprites import MovingSpriteDataset
 import sprites_datagen.rewards as rewards_module
-from .train import _setup_logger
+from .utils import _setup_logger
 
 
 def ablation_decoder(

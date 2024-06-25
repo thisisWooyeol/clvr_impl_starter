@@ -4,7 +4,6 @@ import numpy as np
 
 import cv2
 import imageio
-import logging
 import matplotlib.pyplot as plt
 
 from general_utils import AttrDict, make_image_seq_strip
@@ -12,6 +11,7 @@ from reward_induced.src.reward_predictor import RewardPredictor
 from reward_induced.src.state_decoder import StateDecoder
 from sprites_datagen.moving_sprites import MovingSpriteDataset
 import sprites_datagen.rewards as rewards_module
+from reward_induced.utils import _setup_logger
 
 
 
@@ -349,13 +349,3 @@ def train_encoder(
     torch.save(model.state_dict(), f'{model_save_prefix}_final.pt')
     logger.info(f"Final model saved at {model_save_prefix}_final.pt")
     logger.info(f"Training complete.")
-
-
-def _setup_logger(log_file_path):
-    logger = logging.getLogger(__name__)
-    streamHandler = logging.StreamHandler()
-    fileHandler = logging.FileHandler(log_file_path, mode='w')
-    logger.addHandler(streamHandler)
-    logger.addHandler(fileHandler)
-    logger.setLevel(logging.INFO)
-    return logger
