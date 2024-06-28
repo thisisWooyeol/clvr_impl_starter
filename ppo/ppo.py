@@ -1,11 +1,13 @@
 import gymnasium as gym
 import torch
 import torch.nn as nn
+import torch.utils.tensorboard as tb
 import numpy as np
 
 import sprites_env
 from typing import Union
 import logging
+import sys
 
 from .model import CNN, MLPActorCritic
 from reward_induced.src.reward_predictor import RewardPredictor, ImageEncoder
@@ -137,7 +139,7 @@ class PPO(nn.Module):
         self.env_name = env_name  # only use for logging purposes
         self.envs = gym.make_vec(env_name, num_envs=num_envs)
 
-        # By default, use image shape (3, 64, 64), and 32 hidden states
+        # By default, use image shape (3, 64, 64), 64-dim representation, and 64 hidden states for MLPs
         self.image_shape = (3, 64, 64)
         self.hidden_size = 32
 
@@ -173,10 +175,10 @@ class PPO(nn.Module):
         if policy_type == 'cnn':
             return CNN()
         elif policy_type == 'image-scratch':
-            return ImageEncoder(self.image_shape, self.hidden_size)
+            return ImageEncoder(self.image_shape, 64)
         elif policy_type == 'image-reconstruction' \
             or policy_type == 'image-reconstruction-finetune':
-            image_encoder = ImageEncoder(self.image_shape, self.hidden_size)
+            image_encoder = ImageEncoder(self.image_shape, 64)
             # TODO: load encoder from image reconstruction task
             if policy_type == 'image-reconstruction':
                 image_encoder.requires_grad_(False)
@@ -288,8 +290,12 @@ class PPO(nn.Module):
                 loss = actor_loss + self.ent_coef * critic_loss - self.ent_coef * dist_entropy.mean()
 
                 self.optimizer.zero_grad()
+                if 'finetune' in self.policy_type:
+                    self.enc_optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+                if 'finetune' in self.policy_type:
+                    self.enc_optimizer.step()
 
         # Log
         logger.debug(f'    actor loss:      {actor_loss.item()}')
@@ -300,14 +306,22 @@ class PPO(nn.Module):
             self, 
             total_timesteps: int, 
             log_interval: int,
-            tb_log_name: str = 'PPO',
+            tb_log_name: str = 'ppo/TB_PPO',
             reset_num_timesteps: bool = True,
             progress_bar: bool = False
     ):
         self.policy.to(self.device)
-        self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
+
+        if 'finetune' or 'image-scratch' in self.policy_type:
+            self.optimizer = torch.optim.Adam(list(self.policy.actor.parameters()) + list(self.policy.critic.parameters()), lr=self.learning_rate)
+            self.enc_optimizer = torch.optim.Adam(self.policy.encoder.parameters(), lr=self.learning_rate / 8)
+        else:
+            self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.learning_rate)
+        
+        
         buffer = RolloutBuffer(self.n_steps, self.envs.num_envs, self.envs.single_observation_space.shape, self.envs.single_action_space.shape, self.device)
 
+        writer = tb.SummaryWriter(log_dir=tb_log_name)
         logger = _setup_logger(f'ppo/logs/{self.policy_type}/{self.policy_type}-{self.env_name}.log', self.verbose)
         logger.info(f"""[INFO] Learning Configuration:
             Policy
@@ -336,6 +350,7 @@ class PPO(nn.Module):
             Verbosity
                 - Verbose level:    {self.verbose}
                 - Log interval:     {log_interval}
+                - Tensorboard log:  {tb_log_name}
         """)
 
 
@@ -345,11 +360,15 @@ class PPO(nn.Module):
             self.update(buffer, logger)
             buffer.reset()
 
+            returns = self.validate()
             if self.verbose > 0:
-                returns = self.validate()
                 logger.info(f'    (Validation) Returns: {np.mean(returns)} +/- {np.std(returns)}')
+            writer.add_scalars(f'train/returns/dist{self.env_name[-1]}', {f'{self.policy_type}': np.mean(returns)}, global_step=(update+1) * self.n_steps * self.envs.num_envs)
+
         logger.info(f'[INFO] Training finished ({total_timesteps} steps)')
 
+        writer.flush()
+        writer.close()
         self.envs.close()
         self.save(f'ppo/models/{self.policy_type}/{self.policy_type}-{self.env_name}-{total_timesteps}steps.pt')
         logger.info(f'[INFO] Model saved at ppo/models/{self.policy_type}/{self.policy_type}-{self.env_name}-{total_timesteps}steps.pt')
@@ -376,5 +395,9 @@ def _setup_logger(log_file_path, verbose):
 
 
 if __name__ == '__main__':
-    ppo = PPO('cnn', 'Sprites-v0', num_envs=4, verbose=1)
+    policy_type = sys.argv[1]  # e.g. 'oracle'
+    env_name    = sys.argv[2]  # e.g. 'SpritesState-v0'
+
+    ppo = PPO(policy_type, env_name, num_envs=4, verbose=1)
     ppo.learn(total_timesteps=2**22, log_interval=10)
+    
