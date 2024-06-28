@@ -1,0 +1,1083 @@
+[INFO] Learning Configuration:
+            Policy
+                - Policy type:      reward-prediction-finetune
+                - Policy network:   MLPActorCritic(
+  (actor): Sequential(
+    (0): Linear(in_features=64, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=2, bias=True)
+    (3): Tanh()
+  )
+  (critic): Sequential(
+    (0): Linear(in_features=64, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=1, bias=True)
+  )
+  (encoder): ImageEncoder(
+    (convs): Sequential(
+      (0): Conv2d(3, 4, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ReLU()
+      (2): Conv2d(4, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (3): ReLU()
+      (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (5): ReLU()
+      (6): Conv2d(16, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (7): ReLU()
+      (8): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (9): ReLU()
+      (10): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    )
+    (projection): Linear(in_features=128, out_features=64, bias=True)
+  )
+)
+            Environment
+                - Env name:         Sprites-v2
+                - Num envs:         4
+                - Spec:             EnvSpec(id='Sprites-v2', entry_point='sprites_env.envs.sprites:SpritesEnv', reward_threshold=None, nondeterministic=False, max_episode_steps=None, order_enforce=True, disable_env_checker=False, kwargs={'n_distractors': 2, 'num_envs': 4, 'vectorization_mode': 'sync'}, namespace=None, name='Sprites', version=2, additional_wrappers=(), vector_entry_point=None)
+            Rollout
+                - Rollout Steps:    2048
+            Training
+                - Total timesteps:  4194304
+                - N epochs:         10
+                - Batch size:       64
+                - gamma (discount): 0.99
+                - GAE lambda:       0.95
+                - clip range:       0.2
+                - Normalize adv:    True
+                - Entropy coef:     0.01
+                - Value coef:       0.5
+                - Optimizer:        Adam
+                - Learning rate:    0.0003
+            Device
+                - Device:           cuda
+            Verbosity
+                - Verbose level:    1
+                - Log interval:     10
+                - Tensorboard log:  ppo/TB_PPO
+        
+[INFO] Update 0 (0 / 4194304 steps)
+    (Validation) Returns: 24.416494047193556 +/- 3.343979155040194
+[INFO] Update 1 (8192 / 4194304 steps)
+    (Validation) Returns: 25.062971297463527 +/- 3.151827172830935
+[INFO] Update 2 (16384 / 4194304 steps)
+    (Validation) Returns: 24.727289539914608 +/- 4.575232626150208
+[INFO] Update 3 (24576 / 4194304 steps)
+    (Validation) Returns: 25.345583151066368 +/- 3.523642188993156
+[INFO] Update 4 (32768 / 4194304 steps)
+    (Validation) Returns: 25.03155871847387 +/- 3.8742969306445567
+[INFO] Update 5 (40960 / 4194304 steps)
+    (Validation) Returns: 24.896649467758984 +/- 4.612086156108942
+[INFO] Update 6 (49152 / 4194304 steps)
+    (Validation) Returns: 25.6337910339563 +/- 3.714095822942833
+[INFO] Update 7 (57344 / 4194304 steps)
+    (Validation) Returns: 24.709945662026772 +/- 3.2179596387573577
+[INFO] Update 8 (65536 / 4194304 steps)
+    (Validation) Returns: 25.071588903005757 +/- 3.225772770738754
+[INFO] Update 9 (73728 / 4194304 steps)
+    (Validation) Returns: 25.22542916203543 +/- 3.333826988107631
+[INFO] Update 10 (81920 / 4194304 steps)
+    (Validation) Returns: 24.789955529960064 +/- 3.7018773573358352
+[INFO] Update 11 (90112 / 4194304 steps)
+    (Validation) Returns: 25.13787843662468 +/- 3.3709079333488643
+[INFO] Update 12 (98304 / 4194304 steps)
+    (Validation) Returns: 24.703057599858006 +/- 4.061673978254449
+[INFO] Update 13 (106496 / 4194304 steps)
+    (Validation) Returns: 24.414226812863813 +/- 4.516124256189775
+[INFO] Update 14 (114688 / 4194304 steps)
+    (Validation) Returns: 24.250020285528628 +/- 3.6609710584467425
+[INFO] Update 15 (122880 / 4194304 steps)
+    (Validation) Returns: 24.432834712260142 +/- 3.7691204942154184
+[INFO] Update 16 (131072 / 4194304 steps)
+    (Validation) Returns: 25.390397723149295 +/- 3.395441801002039
+[INFO] Update 17 (139264 / 4194304 steps)
+    (Validation) Returns: 24.87396176198893 +/- 3.7401893102929082
+[INFO] Update 18 (147456 / 4194304 steps)
+    (Validation) Returns: 26.26452573941093 +/- 3.9937744661713834
+[INFO] Update 19 (155648 / 4194304 steps)
+    (Validation) Returns: 25.100753016947756 +/- 4.977756184461035
+[INFO] Update 20 (163840 / 4194304 steps)
+    (Validation) Returns: 24.823706348943645 +/- 4.336763368684888
+[INFO] Update 21 (172032 / 4194304 steps)
+    (Validation) Returns: 25.301050729218968 +/- 3.5163041454358863
+[INFO] Update 22 (180224 / 4194304 steps)
+    (Validation) Returns: 26.481114125120257 +/- 2.3809436107849953
+[INFO] Update 23 (188416 / 4194304 steps)
+    (Validation) Returns: 25.32026369632413 +/- 4.043298259489662
+[INFO] Update 24 (196608 / 4194304 steps)
+    (Validation) Returns: 25.534584449950618 +/- 3.9754227125898187
+[INFO] Update 25 (204800 / 4194304 steps)
+    (Validation) Returns: 24.361504707069578 +/- 4.46885538087816
+[INFO] Update 26 (212992 / 4194304 steps)
+    (Validation) Returns: 26.159418925401475 +/- 3.472866956586195
+[INFO] Update 27 (221184 / 4194304 steps)
+    (Validation) Returns: 25.948460344367607 +/- 3.83189407910495
+[INFO] Update 28 (229376 / 4194304 steps)
+    (Validation) Returns: 25.837862943956544 +/- 3.176426046221115
+[INFO] Update 29 (237568 / 4194304 steps)
+    (Validation) Returns: 25.588466734417743 +/- 3.3774494851906463
+[INFO] Update 30 (245760 / 4194304 steps)
+    (Validation) Returns: 25.51841197180284 +/- 3.4835663481809687
+[INFO] Update 31 (253952 / 4194304 steps)
+    (Validation) Returns: 25.964335670109733 +/- 3.4768214748875077
+[INFO] Update 32 (262144 / 4194304 steps)
+    (Validation) Returns: 25.9369943130716 +/- 4.301025488712941
+[INFO] Update 33 (270336 / 4194304 steps)
+    (Validation) Returns: 26.433074064207382 +/- 3.3746588575753855
+[INFO] Update 34 (278528 / 4194304 steps)
+    (Validation) Returns: 26.337561599641173 +/- 4.348706157159433
+[INFO] Update 35 (286720 / 4194304 steps)
+    (Validation) Returns: 26.012750121334278 +/- 4.057276705420467
+[INFO] Update 36 (294912 / 4194304 steps)
+    (Validation) Returns: 27.821608350397764 +/- 3.2676081008250395
+[INFO] Update 37 (303104 / 4194304 steps)
+    (Validation) Returns: 27.173646614783205 +/- 3.6583999672779113
+[INFO] Update 38 (311296 / 4194304 steps)
+    (Validation) Returns: 26.856558425874823 +/- 4.256127913109879
+[INFO] Update 39 (319488 / 4194304 steps)
+    (Validation) Returns: 24.861098516747433 +/- 3.6339497578737316
+[INFO] Update 40 (327680 / 4194304 steps)
+    (Validation) Returns: 27.473812123873323 +/- 3.689463717209664
+[INFO] Update 41 (335872 / 4194304 steps)
+    (Validation) Returns: 27.2268658392288 +/- 4.32552290933955
+[INFO] Update 42 (344064 / 4194304 steps)
+    (Validation) Returns: 26.353991043438327 +/- 4.063060149304946
+[INFO] Update 43 (352256 / 4194304 steps)
+    (Validation) Returns: 25.788373233123917 +/- 3.0047856755379936
+[INFO] Update 44 (360448 / 4194304 steps)
+    (Validation) Returns: 26.727534275574207 +/- 3.9826115517793035
+[INFO] Update 45 (368640 / 4194304 steps)
+    (Validation) Returns: 26.504810575693266 +/- 4.029635360398176
+[INFO] Update 46 (376832 / 4194304 steps)
+    (Validation) Returns: 26.789076734615186 +/- 3.677320895127242
+[INFO] Update 47 (385024 / 4194304 steps)
+    (Validation) Returns: 26.40440760385841 +/- 2.9305594067998584
+[INFO] Update 48 (393216 / 4194304 steps)
+    (Validation) Returns: 27.33990288078911 +/- 3.842649007607654
+[INFO] Update 49 (401408 / 4194304 steps)
+    (Validation) Returns: 26.33426348243508 +/- 3.4574500091557425
+[INFO] Update 50 (409600 / 4194304 steps)
+    (Validation) Returns: 26.641682323304725 +/- 3.504313737357312
+[INFO] Update 51 (417792 / 4194304 steps)
+    (Validation) Returns: 26.78029465416114 +/- 3.4944020633117154
+[INFO] Update 52 (425984 / 4194304 steps)
+    (Validation) Returns: 26.366350013452653 +/- 4.365558827129097
+[INFO] Update 53 (434176 / 4194304 steps)
+    (Validation) Returns: 26.488021869826774 +/- 3.847217087346698
+[INFO] Update 54 (442368 / 4194304 steps)
+    (Validation) Returns: 28.218333732172834 +/- 3.751573773119174
+[INFO] Update 55 (450560 / 4194304 steps)
+    (Validation) Returns: 27.180056225153372 +/- 3.8932013275825814
+[INFO] Update 56 (458752 / 4194304 steps)
+    (Validation) Returns: 28.152345526792338 +/- 3.6744402780790244
+[INFO] Update 57 (466944 / 4194304 steps)
+    (Validation) Returns: 27.63407261539469 +/- 3.729433251631959
+[INFO] Update 58 (475136 / 4194304 steps)
+    (Validation) Returns: 27.69144701217681 +/- 3.6792412454805103
+[INFO] Update 59 (483328 / 4194304 steps)
+    (Validation) Returns: 28.586675211397704 +/- 3.5836810714749703
+[INFO] Update 60 (491520 / 4194304 steps)
+    (Validation) Returns: 27.52556830155425 +/- 3.29632600666304
+[INFO] Update 61 (499712 / 4194304 steps)
+    (Validation) Returns: 27.734650851174546 +/- 3.8122819242271695
+[INFO] Update 62 (507904 / 4194304 steps)
+    (Validation) Returns: 26.039892825438823 +/- 3.3806397816509928
+[INFO] Update 63 (516096 / 4194304 steps)
+    (Validation) Returns: 27.91867651970158 +/- 2.9388907515940983
+[INFO] Update 64 (524288 / 4194304 steps)
+    (Validation) Returns: 27.986196104780657 +/- 3.144209316200069
+[INFO] Update 65 (532480 / 4194304 steps)
+    (Validation) Returns: 28.784941961551475 +/- 3.5602200661171546
+[INFO] Update 66 (540672 / 4194304 steps)
+    (Validation) Returns: 27.837975356454432 +/- 3.266685319301672
+[INFO] Update 67 (548864 / 4194304 steps)
+    (Validation) Returns: 27.800956500418966 +/- 2.9445685277646745
+[INFO] Update 68 (557056 / 4194304 steps)
+    (Validation) Returns: 28.31933465814037 +/- 2.9415419378385455
+[INFO] Update 69 (565248 / 4194304 steps)
+    (Validation) Returns: 28.60200526364241 +/- 3.2388667372578097
+[INFO] Update 70 (573440 / 4194304 steps)
+    (Validation) Returns: 28.591482453414336 +/- 2.893543900510183
+[INFO] Update 71 (581632 / 4194304 steps)
+    (Validation) Returns: 29.270265355865412 +/- 3.811389121837557
+[INFO] Update 72 (589824 / 4194304 steps)
+    (Validation) Returns: 27.607990873001064 +/- 3.649230321667208
+[INFO] Update 73 (598016 / 4194304 steps)
+    (Validation) Returns: 28.192452443727937 +/- 3.778376604758194
+[INFO] Update 74 (606208 / 4194304 steps)
+    (Validation) Returns: 27.924614878788738 +/- 3.096787670958838
+[INFO] Update 75 (614400 / 4194304 steps)
+    (Validation) Returns: 27.825976802092292 +/- 3.0623053099671
+[INFO] Update 76 (622592 / 4194304 steps)
+    (Validation) Returns: 28.461456032463964 +/- 3.1096185688643008
+[INFO] Update 77 (630784 / 4194304 steps)
+    (Validation) Returns: 28.455011337529715 +/- 2.9714784253916817
+[INFO] Update 78 (638976 / 4194304 steps)
+    (Validation) Returns: 28.03443057704299 +/- 2.9097550848736735
+[INFO] Update 79 (647168 / 4194304 steps)
+    (Validation) Returns: 28.434605183341112 +/- 3.012782768193041
+[INFO] Update 80 (655360 / 4194304 steps)
+    (Validation) Returns: 27.707772176522695 +/- 3.245461096381243
+[INFO] Update 81 (663552 / 4194304 steps)
+    (Validation) Returns: 28.104744348051895 +/- 2.4927869013975723
+[INFO] Update 82 (671744 / 4194304 steps)
+    (Validation) Returns: 28.864074267905202 +/- 3.2078964861463164
+[INFO] Update 83 (679936 / 4194304 steps)
+    (Validation) Returns: 28.187652503451243 +/- 2.9583873565907637
+[INFO] Update 84 (688128 / 4194304 steps)
+    (Validation) Returns: 28.636417912556 +/- 2.7914004226809075
+[INFO] Update 85 (696320 / 4194304 steps)
+    (Validation) Returns: 28.369089316737508 +/- 3.096905251189401
+[INFO] Update 86 (704512 / 4194304 steps)
+    (Validation) Returns: 29.065364060360224 +/- 2.984024811532514
+[INFO] Update 87 (712704 / 4194304 steps)
+    (Validation) Returns: 28.578494461969235 +/- 2.2816213809765777
+[INFO] Update 88 (720896 / 4194304 steps)
+    (Validation) Returns: 28.35292456127545 +/- 3.593051971411634
+[INFO] Update 89 (729088 / 4194304 steps)
+    (Validation) Returns: 28.296905014351317 +/- 2.7320641228239486
+[INFO] Update 90 (737280 / 4194304 steps)
+    (Validation) Returns: 28.204019486930918 +/- 3.2441499600643495
+[INFO] Update 91 (745472 / 4194304 steps)
+    (Validation) Returns: 28.78622091140868 +/- 2.8556441748567623
+[INFO] Update 92 (753664 / 4194304 steps)
+    (Validation) Returns: 28.92222105904562 +/- 2.5893058772584734
+[INFO] Update 93 (761856 / 4194304 steps)
+    (Validation) Returns: 28.691645725812474 +/- 2.856400958479809
+[INFO] Update 94 (770048 / 4194304 steps)
+    (Validation) Returns: 28.50919108415237 +/- 3.6109368430073774
+[INFO] Update 95 (778240 / 4194304 steps)
+    (Validation) Returns: 28.449207961411126 +/- 2.6932356813349205
+[INFO] Update 96 (786432 / 4194304 steps)
+    (Validation) Returns: 28.49243605690909 +/- 3.108331028638775
+[INFO] Update 97 (794624 / 4194304 steps)
+    (Validation) Returns: 28.07716971896121 +/- 2.869468212635239
+[INFO] Update 98 (802816 / 4194304 steps)
+    (Validation) Returns: 28.159487389432087 +/- 2.5777624554766567
+[INFO] Update 99 (811008 / 4194304 steps)
+    (Validation) Returns: 28.785140245292514 +/- 3.6119323927501665
+[INFO] Update 100 (819200 / 4194304 steps)
+    (Validation) Returns: 28.89939544241712 +/- 3.028263288940066
+[INFO] Update 101 (827392 / 4194304 steps)
+    (Validation) Returns: 28.452727989332608 +/- 2.5306699115648947
+[INFO] Update 102 (835584 / 4194304 steps)
+    (Validation) Returns: 28.16326544789688 +/- 2.941634725173254
+[INFO] Update 103 (843776 / 4194304 steps)
+    (Validation) Returns: 28.548151470018546 +/- 3.7243920250223557
+[INFO] Update 104 (851968 / 4194304 steps)
+    (Validation) Returns: 28.3504989412271 +/- 2.78242739788932
+[INFO] Update 105 (860160 / 4194304 steps)
+    (Validation) Returns: 28.82969177446028 +/- 2.610427295521857
+[INFO] Update 106 (868352 / 4194304 steps)
+    (Validation) Returns: 29.425740038376624 +/- 3.0429224874345056
+[INFO] Update 107 (876544 / 4194304 steps)
+    (Validation) Returns: 29.191840271823686 +/- 2.7608592971172032
+[INFO] Update 108 (884736 / 4194304 steps)
+    (Validation) Returns: 28.545565476592248 +/- 2.6654292473722245
+[INFO] Update 109 (892928 / 4194304 steps)
+    (Validation) Returns: 27.92627143767795 +/- 2.832059645429097
+[INFO] Update 110 (901120 / 4194304 steps)
+    (Validation) Returns: 28.688084515979263 +/- 3.586961611319615
+[INFO] Update 111 (909312 / 4194304 steps)
+    (Validation) Returns: 29.623103682014452 +/- 2.8816264856574345
+[INFO] Update 112 (917504 / 4194304 steps)
+    (Validation) Returns: 28.494149052615217 +/- 3.173452312006767
+[INFO] Update 113 (925696 / 4194304 steps)
+    (Validation) Returns: 27.937483242580832 +/- 3.912390367610378
+[INFO] Update 114 (933888 / 4194304 steps)
+    (Validation) Returns: 27.877072492266574 +/- 2.9060683484046925
+[INFO] Update 115 (942080 / 4194304 steps)
+    (Validation) Returns: 28.26227123329893 +/- 2.7333686206608516
+[INFO] Update 116 (950272 / 4194304 steps)
+    (Validation) Returns: 28.849523976421466 +/- 2.283188701516744
+[INFO] Update 117 (958464 / 4194304 steps)
+    (Validation) Returns: 28.640623442959075 +/- 3.299137448475591
+[INFO] Update 118 (966656 / 4194304 steps)
+    (Validation) Returns: 28.61693712327476 +/- 3.253123285266996
+[INFO] Update 119 (974848 / 4194304 steps)
+    (Validation) Returns: 29.32816868590811 +/- 2.7974420425576922
+[INFO] Update 120 (983040 / 4194304 steps)
+    (Validation) Returns: 28.848582930580857 +/- 2.783243344141234
+[INFO] Update 121 (991232 / 4194304 steps)
+    (Validation) Returns: 29.23850183852942 +/- 2.7194645860419664
+[INFO] Update 122 (999424 / 4194304 steps)
+    (Validation) Returns: 29.44255653098864 +/- 2.6692778523685785
+[INFO] Update 123 (1007616 / 4194304 steps)
+    (Validation) Returns: 28.357073521140013 +/- 3.1579873041533055
+[INFO] Update 124 (1015808 / 4194304 steps)
+    (Validation) Returns: 30.232037665326466 +/- 3.010888080394121
+[INFO] Update 125 (1024000 / 4194304 steps)
+    (Validation) Returns: 29.073522060767182 +/- 3.4524265205835847
+[INFO] Update 126 (1032192 / 4194304 steps)
+    (Validation) Returns: 28.88689761458798 +/- 2.924328558668752
+[INFO] Update 127 (1040384 / 4194304 steps)
+    (Validation) Returns: 28.44866351158285 +/- 2.7676798709580566
+[INFO] Update 128 (1048576 / 4194304 steps)
+    (Validation) Returns: 28.497834516901673 +/- 2.687967401340526
+[INFO] Update 129 (1056768 / 4194304 steps)
+    (Validation) Returns: 28.543201394091472 +/- 3.1501164715962084
+[INFO] Update 130 (1064960 / 4194304 steps)
+    (Validation) Returns: 29.34160860118957 +/- 3.0616729608925777
+[INFO] Update 131 (1073152 / 4194304 steps)
+    (Validation) Returns: 28.895355641579613 +/- 3.52494109762455
+[INFO] Update 132 (1081344 / 4194304 steps)
+    (Validation) Returns: 29.049695016073304 +/- 2.9311340194271125
+[INFO] Update 133 (1089536 / 4194304 steps)
+    (Validation) Returns: 29.460349526408983 +/- 2.223818915227528
+[INFO] Update 134 (1097728 / 4194304 steps)
+    (Validation) Returns: 28.6142771582431 +/- 3.443850036323578
+[INFO] Update 135 (1105920 / 4194304 steps)
+    (Validation) Returns: 28.999645503493742 +/- 3.6067148949612524
+[INFO] Update 136 (1114112 / 4194304 steps)
+    (Validation) Returns: 29.725367630121745 +/- 3.2025273031514487
+[INFO] Update 137 (1122304 / 4194304 steps)
+    (Validation) Returns: 28.73339473259756 +/- 2.8164586554042286
+[INFO] Update 138 (1130496 / 4194304 steps)
+    (Validation) Returns: 28.558723313098177 +/- 2.9748012109682875
+[INFO] Update 139 (1138688 / 4194304 steps)
+    (Validation) Returns: 29.109375842497464 +/- 3.175494344621149
+[INFO] Update 140 (1146880 / 4194304 steps)
+    (Validation) Returns: 28.689085975252915 +/- 3.0241200968509014
+[INFO] Update 141 (1155072 / 4194304 steps)
+    (Validation) Returns: 29.20895706311485 +/- 2.57986761496082
+[INFO] Update 142 (1163264 / 4194304 steps)
+    (Validation) Returns: 28.529511658029417 +/- 2.7233766419776555
+[INFO] Update 143 (1171456 / 4194304 steps)
+    (Validation) Returns: 28.917422155832178 +/- 3.1027504558200003
+[INFO] Update 144 (1179648 / 4194304 steps)
+    (Validation) Returns: 28.810650155312782 +/- 3.461457928138973
+[INFO] Update 145 (1187840 / 4194304 steps)
+    (Validation) Returns: 29.132569214782983 +/- 2.4351356764541205
+[INFO] Update 146 (1196032 / 4194304 steps)
+    (Validation) Returns: 30.084687300294114 +/- 3.507563002630031
+[INFO] Update 147 (1204224 / 4194304 steps)
+    (Validation) Returns: 29.076293124999815 +/- 3.0898341529027324
+[INFO] Update 148 (1212416 / 4194304 steps)
+    (Validation) Returns: 29.131163511928587 +/- 2.940912872864973
+[INFO] Update 149 (1220608 / 4194304 steps)
+    (Validation) Returns: 28.991315038038987 +/- 3.2456021969099718
+[INFO] Update 150 (1228800 / 4194304 steps)
+    (Validation) Returns: 29.058878597289613 +/- 3.2349820860480714
+[INFO] Update 151 (1236992 / 4194304 steps)
+    (Validation) Returns: 29.045574095419717 +/- 2.5903160929401596
+[INFO] Update 152 (1245184 / 4194304 steps)
+    (Validation) Returns: 28.87405411542833 +/- 2.6814136193573694
+[INFO] Update 153 (1253376 / 4194304 steps)
+    (Validation) Returns: 30.170520965252013 +/- 3.068927938957973
+[INFO] Update 154 (1261568 / 4194304 steps)
+    (Validation) Returns: 29.6895267792601 +/- 2.646740997880714
+[INFO] Update 155 (1269760 / 4194304 steps)
+    (Validation) Returns: 29.062533351457763 +/- 2.4200579342505213
+[INFO] Update 156 (1277952 / 4194304 steps)
+    (Validation) Returns: 29.341599720166755 +/- 2.5976222897193453
+[INFO] Update 157 (1286144 / 4194304 steps)
+    (Validation) Returns: 29.467756384670782 +/- 2.9711234041428134
+[INFO] Update 158 (1294336 / 4194304 steps)
+    (Validation) Returns: 29.05904513002067 +/- 3.117198629679031
+[INFO] Update 159 (1302528 / 4194304 steps)
+    (Validation) Returns: 28.849835497334162 +/- 2.7077156488798373
+[INFO] Update 160 (1310720 / 4194304 steps)
+    (Validation) Returns: 29.272149101181817 +/- 2.872228739494261
+[INFO] Update 161 (1318912 / 4194304 steps)
+    (Validation) Returns: 29.115454681607254 +/- 2.4477393308199105
+[INFO] Update 162 (1327104 / 4194304 steps)
+    (Validation) Returns: 29.899175991023707 +/- 2.992555990575039
+[INFO] Update 163 (1335296 / 4194304 steps)
+    (Validation) Returns: 28.972794746259023 +/- 3.2321207238982836
+[INFO] Update 164 (1343488 / 4194304 steps)
+    (Validation) Returns: 29.34478069456484 +/- 2.454341334977936
+[INFO] Update 165 (1351680 / 4194304 steps)
+    (Validation) Returns: 29.0599126342672 +/- 2.387263155433425
+[INFO] Update 166 (1359872 / 4194304 steps)
+    (Validation) Returns: 30.014059944909604 +/- 2.3046639793993435
+[INFO] Update 167 (1368064 / 4194304 steps)
+    (Validation) Returns: 30.202814674936935 +/- 2.6457923581091487
+[INFO] Update 168 (1376256 / 4194304 steps)
+    (Validation) Returns: 29.555781680174324 +/- 3.3837230729872356
+[INFO] Update 169 (1384448 / 4194304 steps)
+    (Validation) Returns: 28.83214975193702 +/- 3.008866873323238
+[INFO] Update 170 (1392640 / 4194304 steps)
+    (Validation) Returns: 29.35229172979182 +/- 3.2209000593397223
+[INFO] Update 171 (1400832 / 4194304 steps)
+    (Validation) Returns: 29.732286500722022 +/- 2.702266704721846
+[INFO] Update 172 (1409024 / 4194304 steps)
+    (Validation) Returns: 29.106468305164277 +/- 2.5139095673368628
+[INFO] Update 173 (1417216 / 4194304 steps)
+    (Validation) Returns: 28.59926495905263 +/- 2.4909744881427898
+[INFO] Update 174 (1425408 / 4194304 steps)
+    (Validation) Returns: 29.266057769891887 +/- 2.536279838128661
+[INFO] Update 175 (1433600 / 4194304 steps)
+    (Validation) Returns: 29.054570485357978 +/- 3.0365755190212864
+[INFO] Update 176 (1441792 / 4194304 steps)
+    (Validation) Returns: 29.427809434682604 +/- 2.3058383156132862
+[INFO] Update 177 (1449984 / 4194304 steps)
+    (Validation) Returns: 29.29698193594844 +/- 2.22785751639048
+[INFO] Update 178 (1458176 / 4194304 steps)
+    (Validation) Returns: 29.23099877651405 +/- 2.679045025071775
+[INFO] Update 179 (1466368 / 4194304 steps)
+    (Validation) Returns: 29.536241738629485 +/- 2.3232384959123906
+[INFO] Update 180 (1474560 / 4194304 steps)
+    (Validation) Returns: 29.639422726249414 +/- 2.163980270122668
+[INFO] Update 181 (1482752 / 4194304 steps)
+    (Validation) Returns: 29.34328079978132 +/- 2.7726577956838296
+[INFO] Update 182 (1490944 / 4194304 steps)
+    (Validation) Returns: 29.48715777224344 +/- 2.3512977040560012
+[INFO] Update 183 (1499136 / 4194304 steps)
+    (Validation) Returns: 29.960383898706844 +/- 2.3606073690764964
+[INFO] Update 184 (1507328 / 4194304 steps)
+    (Validation) Returns: 29.172298070172737 +/- 2.124304740701314
+[INFO] Update 185 (1515520 / 4194304 steps)
+    (Validation) Returns: 29.1864943484616 +/- 3.1542645650054277
+[INFO] Update 186 (1523712 / 4194304 steps)
+    (Validation) Returns: 29.881995682024332 +/- 2.196015937863424
+[INFO] Update 187 (1531904 / 4194304 steps)
+    (Validation) Returns: 29.36664194974518 +/- 2.405908462232811
+[INFO] Update 188 (1540096 / 4194304 steps)
+    (Validation) Returns: 29.954939240217307 +/- 2.088451256903402
+[INFO] Update 189 (1548288 / 4194304 steps)
+    (Validation) Returns: 28.907379800964936 +/- 2.524363288957904
+[INFO] Update 190 (1556480 / 4194304 steps)
+    (Validation) Returns: 30.46256858745956 +/- 2.6088801151813663
+[INFO] Update 191 (1564672 / 4194304 steps)
+    (Validation) Returns: 29.215122810608143 +/- 2.623786932260854
+[INFO] Update 192 (1572864 / 4194304 steps)
+    (Validation) Returns: 29.157585832808877 +/- 2.5184120254038374
+[INFO] Update 193 (1581056 / 4194304 steps)
+    (Validation) Returns: 30.061851252746273 +/- 2.8806508441807406
+[INFO] Update 194 (1589248 / 4194304 steps)
+    (Validation) Returns: 29.94082994247693 +/- 2.6998949574638473
+[INFO] Update 195 (1597440 / 4194304 steps)
+    (Validation) Returns: 30.386469986768645 +/- 2.5696967100091985
+[INFO] Update 196 (1605632 / 4194304 steps)
+    (Validation) Returns: 29.745742253842614 +/- 2.2335470231016354
+[INFO] Update 197 (1613824 / 4194304 steps)
+    (Validation) Returns: 28.329879756503196 +/- 2.450420477216111
+[INFO] Update 198 (1622016 / 4194304 steps)
+    (Validation) Returns: 29.102193662134482 +/- 2.7168223047853033
+[INFO] Update 199 (1630208 / 4194304 steps)
+    (Validation) Returns: 30.222824711402048 +/- 2.7770877273230012
+[INFO] Update 200 (1638400 / 4194304 steps)
+    (Validation) Returns: 29.851053474330094 +/- 2.364800237851575
+[INFO] Update 201 (1646592 / 4194304 steps)
+    (Validation) Returns: 29.60579557245486 +/- 2.4620578507587347
+[INFO] Update 202 (1654784 / 4194304 steps)
+    (Validation) Returns: 29.54371336993545 +/- 2.7740782207174743
+[INFO] Update 203 (1662976 / 4194304 steps)
+    (Validation) Returns: 29.256427392952997 +/- 2.867668783430894
+[INFO] Update 204 (1671168 / 4194304 steps)
+    (Validation) Returns: 29.867899403345994 +/- 2.4349856314531393
+[INFO] Update 205 (1679360 / 4194304 steps)
+    (Validation) Returns: 29.562151993567124 +/- 2.140565201940487
+[INFO] Update 206 (1687552 / 4194304 steps)
+    (Validation) Returns: 29.484764107685113 +/- 2.3780621293415285
+[INFO] Update 207 (1695744 / 4194304 steps)
+    (Validation) Returns: 29.424623835805942 +/- 2.264561040934431
+[INFO] Update 208 (1703936 / 4194304 steps)
+    (Validation) Returns: 29.769140993534496 +/- 3.105344007443385
+[INFO] Update 209 (1712128 / 4194304 steps)
+    (Validation) Returns: 29.04416130366339 +/- 3.0476677346023533
+[INFO] Update 210 (1720320 / 4194304 steps)
+    (Validation) Returns: 30.114711560682803 +/- 2.6164012783090587
+[INFO] Update 211 (1728512 / 4194304 steps)
+    (Validation) Returns: 29.463521893507 +/- 2.897995958849907
+[INFO] Update 212 (1736704 / 4194304 steps)
+    (Validation) Returns: 29.738599916510772 +/- 2.786095096666864
+[INFO] Update 213 (1744896 / 4194304 steps)
+    (Validation) Returns: 30.282185735241796 +/- 2.4311122383819432
+[INFO] Update 214 (1753088 / 4194304 steps)
+    (Validation) Returns: 29.814886974643095 +/- 2.456035774452405
+[INFO] Update 215 (1761280 / 4194304 steps)
+    (Validation) Returns: 28.986737210824266 +/- 2.2825535231628535
+[INFO] Update 216 (1769472 / 4194304 steps)
+    (Validation) Returns: 28.781414602017662 +/- 2.8591006119808635
+[INFO] Update 217 (1777664 / 4194304 steps)
+    (Validation) Returns: 29.660086317758545 +/- 3.171842312542744
+[INFO] Update 218 (1785856 / 4194304 steps)
+    (Validation) Returns: 28.611695079017778 +/- 2.4995104717690975
+[INFO] Update 219 (1794048 / 4194304 steps)
+    (Validation) Returns: 29.819279958988567 +/- 2.65227667019538
+[INFO] Update 220 (1802240 / 4194304 steps)
+    (Validation) Returns: 29.43683576864616 +/- 2.8991958925142747
+[INFO] Update 221 (1810432 / 4194304 steps)
+    (Validation) Returns: 29.054736706362313 +/- 2.8220341074936686
+[INFO] Update 222 (1818624 / 4194304 steps)
+    (Validation) Returns: 29.447587172736736 +/- 2.5637193716213793
+[INFO] Update 223 (1826816 / 4194304 steps)
+    (Validation) Returns: 29.222398135154513 +/- 2.108575166031022
+[INFO] Update 224 (1835008 / 4194304 steps)
+    (Validation) Returns: 29.81077621779475 +/- 2.554237111100376
+[INFO] Update 225 (1843200 / 4194304 steps)
+    (Validation) Returns: 28.3241177830623 +/- 2.6925413175801496
+[INFO] Update 226 (1851392 / 4194304 steps)
+    (Validation) Returns: 29.507501094548807 +/- 2.2847299294342087
+[INFO] Update 227 (1859584 / 4194304 steps)
+    (Validation) Returns: 29.459878110734547 +/- 2.5835919524888453
+[INFO] Update 228 (1867776 / 4194304 steps)
+    (Validation) Returns: 29.651758930607958 +/- 2.3482538447510777
+[INFO] Update 229 (1875968 / 4194304 steps)
+    (Validation) Returns: 29.624341862945663 +/- 2.8396814850729415
+[INFO] Update 230 (1884160 / 4194304 steps)
+    (Validation) Returns: 29.023628161503712 +/- 2.5383852634072506
+[INFO] Update 231 (1892352 / 4194304 steps)
+    (Validation) Returns: 30.06718440057133 +/- 2.737782360700352
+[INFO] Update 232 (1900544 / 4194304 steps)
+    (Validation) Returns: 30.16121699102039 +/- 2.8443591699901725
+[INFO] Update 233 (1908736 / 4194304 steps)
+    (Validation) Returns: 29.780765225921197 +/- 2.9956462541511155
+[INFO] Update 234 (1916928 / 4194304 steps)
+    (Validation) Returns: 29.529276918831812 +/- 2.585833879197155
+[INFO] Update 235 (1925120 / 4194304 steps)
+    (Validation) Returns: 30.200413804010044 +/- 2.9992894945808617
+[INFO] Update 236 (1933312 / 4194304 steps)
+    (Validation) Returns: 29.024202580353545 +/- 2.236397750251415
+[INFO] Update 237 (1941504 / 4194304 steps)
+    (Validation) Returns: 30.029877607712784 +/- 2.7724191522993036
+[INFO] Update 238 (1949696 / 4194304 steps)
+    (Validation) Returns: 29.10356318959914 +/- 2.4144240491184052
+[INFO] Update 239 (1957888 / 4194304 steps)
+    (Validation) Returns: 30.69369528265783 +/- 2.046452856544155
+[INFO] Update 240 (1966080 / 4194304 steps)
+    (Validation) Returns: 29.59728465573219 +/- 1.9474364206622088
+[INFO] Update 241 (1974272 / 4194304 steps)
+    (Validation) Returns: 29.153491205660135 +/- 2.261380526093848
+[INFO] Update 242 (1982464 / 4194304 steps)
+    (Validation) Returns: 29.23697581700415 +/- 2.3734863853809314
+[INFO] Update 243 (1990656 / 4194304 steps)
+    (Validation) Returns: 30.014367363106963 +/- 2.3072471293312273
+[INFO] Update 244 (1998848 / 4194304 steps)
+    (Validation) Returns: 28.80390430536976 +/- 2.47297692049065
+[INFO] Update 245 (2007040 / 4194304 steps)
+    (Validation) Returns: 29.877935508091205 +/- 2.6536673271477462
+[INFO] Update 246 (2015232 / 4194304 steps)
+    (Validation) Returns: 29.3676142812737 +/- 2.5439375040178067
+[INFO] Update 247 (2023424 / 4194304 steps)
+    (Validation) Returns: 29.42830458704759 +/- 2.7693679000666584
+[INFO] Update 248 (2031616 / 4194304 steps)
+    (Validation) Returns: 29.463543898759486 +/- 2.4459708899523758
+[INFO] Update 249 (2039808 / 4194304 steps)
+    (Validation) Returns: 29.347675999310656 +/- 2.1650576227515987
+[INFO] Update 250 (2048000 / 4194304 steps)
+    (Validation) Returns: 29.77820232460666 +/- 2.7782997801878113
+[INFO] Update 251 (2056192 / 4194304 steps)
+    (Validation) Returns: 30.178448850152233 +/- 2.590281477958437
+[INFO] Update 252 (2064384 / 4194304 steps)
+    (Validation) Returns: 29.66847163342633 +/- 2.32835457677357
+[INFO] Update 253 (2072576 / 4194304 steps)
+    (Validation) Returns: 29.916884382307234 +/- 3.1688224380370067
+[INFO] Update 254 (2080768 / 4194304 steps)
+    (Validation) Returns: 29.463301726175587 +/- 2.810100563338095
+[INFO] Update 255 (2088960 / 4194304 steps)
+    (Validation) Returns: 29.556142127235212 +/- 2.5869062555307707
+[INFO] Update 256 (2097152 / 4194304 steps)
+    (Validation) Returns: 29.58361511027192 +/- 2.256297987773527
+[INFO] Update 257 (2105344 / 4194304 steps)
+    (Validation) Returns: 29.115692411368133 +/- 2.4567703778600642
+[INFO] Update 258 (2113536 / 4194304 steps)
+    (Validation) Returns: 29.66789197355497 +/- 2.4541559432367026
+[INFO] Update 259 (2121728 / 4194304 steps)
+    (Validation) Returns: 29.663550501973702 +/- 2.937546528517531
+[INFO] Update 260 (2129920 / 4194304 steps)
+    (Validation) Returns: 30.066623872132045 +/- 2.4345385000248023
+[INFO] Update 261 (2138112 / 4194304 steps)
+    (Validation) Returns: 29.92887883184709 +/- 2.1873923685768193
+[INFO] Update 262 (2146304 / 4194304 steps)
+    (Validation) Returns: 29.27501777138027 +/- 2.140052461660159
+[INFO] Update 263 (2154496 / 4194304 steps)
+    (Validation) Returns: 30.020360230217193 +/- 2.6202437574793467
+[INFO] Update 264 (2162688 / 4194304 steps)
+    (Validation) Returns: 29.569675884114776 +/- 2.370425455667059
+[INFO] Update 265 (2170880 / 4194304 steps)
+    (Validation) Returns: 29.943686160202155 +/- 2.278190483916068
+[INFO] Update 266 (2179072 / 4194304 steps)
+    (Validation) Returns: 29.07789601381881 +/- 2.674386145997586
+[INFO] Update 267 (2187264 / 4194304 steps)
+    (Validation) Returns: 30.125434410649262 +/- 2.217101058419205
+[INFO] Update 268 (2195456 / 4194304 steps)
+    (Validation) Returns: 29.279717889902525 +/- 2.468927010124205
+[INFO] Update 269 (2203648 / 4194304 steps)
+    (Validation) Returns: 29.34953841163142 +/- 2.4940669724798132
+[INFO] Update 270 (2211840 / 4194304 steps)
+    (Validation) Returns: 29.979858876125398 +/- 1.9332917014337307
+[INFO] Update 271 (2220032 / 4194304 steps)
+    (Validation) Returns: 29.51872094131639 +/- 2.751491849437663
+[INFO] Update 272 (2228224 / 4194304 steps)
+    (Validation) Returns: 30.091211354108093 +/- 2.6951989471483064
+[INFO] Update 273 (2236416 / 4194304 steps)
+    (Validation) Returns: 29.974845258282254 +/- 2.675201038529819
+[INFO] Update 274 (2244608 / 4194304 steps)
+    (Validation) Returns: 29.537354685362118 +/- 2.4209325233974983
+[INFO] Update 275 (2252800 / 4194304 steps)
+    (Validation) Returns: 29.617345790135197 +/- 2.370330733513584
+[INFO] Update 276 (2260992 / 4194304 steps)
+    (Validation) Returns: 29.961491868292693 +/- 1.9534056408509934
+[INFO] Update 277 (2269184 / 4194304 steps)
+    (Validation) Returns: 29.651512617819684 +/- 2.9951639529937615
+[INFO] Update 278 (2277376 / 4194304 steps)
+    (Validation) Returns: 29.443981585025377 +/- 2.463165202546282
+[INFO] Update 279 (2285568 / 4194304 steps)
+    (Validation) Returns: 29.748201260873667 +/- 2.3209799810470715
+[INFO] Update 280 (2293760 / 4194304 steps)
+    (Validation) Returns: 29.597478327677397 +/- 2.3149335768087926
+[INFO] Update 281 (2301952 / 4194304 steps)
+    (Validation) Returns: 29.820682469056806 +/- 2.3901788048173773
+[INFO] Update 282 (2310144 / 4194304 steps)
+    (Validation) Returns: 29.364124224134606 +/- 2.2097794131746067
+[INFO] Update 283 (2318336 / 4194304 steps)
+    (Validation) Returns: 29.91420904319545 +/- 2.392279359156456
+[INFO] Update 284 (2326528 / 4194304 steps)
+    (Validation) Returns: 29.0241345246367 +/- 2.766683971102237
+[INFO] Update 285 (2334720 / 4194304 steps)
+    (Validation) Returns: 29.45190491518297 +/- 1.8968326887762343
+[INFO] Update 286 (2342912 / 4194304 steps)
+    (Validation) Returns: 29.49423089675285 +/- 1.8860900515214638
+[INFO] Update 287 (2351104 / 4194304 steps)
+    (Validation) Returns: 29.836521551095508 +/- 2.227108414776655
+[INFO] Update 288 (2359296 / 4194304 steps)
+    (Validation) Returns: 29.161698767840484 +/- 2.1648532772214333
+[INFO] Update 289 (2367488 / 4194304 steps)
+    (Validation) Returns: 29.093925329988814 +/- 2.6478236081768385
+[INFO] Update 290 (2375680 / 4194304 steps)
+    (Validation) Returns: 29.699495356597186 +/- 2.726467398497252
+[INFO] Update 291 (2383872 / 4194304 steps)
+    (Validation) Returns: 29.22262243180097 +/- 1.8863708096696525
+[INFO] Update 292 (2392064 / 4194304 steps)
+    (Validation) Returns: 29.439815111948313 +/- 1.9678582311869532
+[INFO] Update 293 (2400256 / 4194304 steps)
+    (Validation) Returns: 29.825143952572954 +/- 2.58340206871888
+[INFO] Update 294 (2408448 / 4194304 steps)
+    (Validation) Returns: 30.79415146938097 +/- 2.5516931719049025
+[INFO] Update 295 (2416640 / 4194304 steps)
+    (Validation) Returns: 29.930960884969988 +/- 1.9483571852173385
+[INFO] Update 296 (2424832 / 4194304 steps)
+    (Validation) Returns: 29.83072008648516 +/- 2.68429458770414
+[INFO] Update 297 (2433024 / 4194304 steps)
+    (Validation) Returns: 29.92611548214674 +/- 2.466166505906679
+[INFO] Update 298 (2441216 / 4194304 steps)
+    (Validation) Returns: 29.80743481025734 +/- 1.9899227978488416
+[INFO] Update 299 (2449408 / 4194304 steps)
+    (Validation) Returns: 29.80674556539522 +/- 2.3187889218496807
+[INFO] Update 300 (2457600 / 4194304 steps)
+    (Validation) Returns: 28.66300279758583 +/- 2.2161014869203983
+[INFO] Update 301 (2465792 / 4194304 steps)
+    (Validation) Returns: 30.092616955033417 +/- 2.4247600493155566
+[INFO] Update 302 (2473984 / 4194304 steps)
+    (Validation) Returns: 29.913482313692036 +/- 2.4841123934083775
+[INFO] Update 303 (2482176 / 4194304 steps)
+    (Validation) Returns: 30.266121500949815 +/- 2.8308975806804155
+[INFO] Update 304 (2490368 / 4194304 steps)
+    (Validation) Returns: 29.849407844413804 +/- 2.617733524580588
+[INFO] Update 305 (2498560 / 4194304 steps)
+    (Validation) Returns: 29.722002422350975 +/- 2.2953235041703928
+[INFO] Update 306 (2506752 / 4194304 steps)
+    (Validation) Returns: 29.680593044151653 +/- 2.37242823611722
+[INFO] Update 307 (2514944 / 4194304 steps)
+    (Validation) Returns: 29.500900514260223 +/- 2.398912993935092
+[INFO] Update 308 (2523136 / 4194304 steps)
+    (Validation) Returns: 29.159412085805418 +/- 2.9894927230805557
+[INFO] Update 309 (2531328 / 4194304 steps)
+    (Validation) Returns: 30.250828422041117 +/- 1.9894144838211654
+[INFO] Update 310 (2539520 / 4194304 steps)
+    (Validation) Returns: 28.91072524966314 +/- 2.567355490701645
+[INFO] Update 311 (2547712 / 4194304 steps)
+    (Validation) Returns: 29.288301384465946 +/- 2.9422507977765258
+[INFO] Update 312 (2555904 / 4194304 steps)
+    (Validation) Returns: 29.5858149818073 +/- 1.9995559031605337
+[INFO] Update 313 (2564096 / 4194304 steps)
+    (Validation) Returns: 29.58498435863756 +/- 2.264556560624749
+[INFO] Update 314 (2572288 / 4194304 steps)
+    (Validation) Returns: 29.540851781870504 +/- 2.0079367628041305
+[INFO] Update 315 (2580480 / 4194304 steps)
+    (Validation) Returns: 30.171900428409423 +/- 2.545958865349155
+[INFO] Update 316 (2588672 / 4194304 steps)
+    (Validation) Returns: 29.965306124092763 +/- 2.4992616711436564
+[INFO] Update 317 (2596864 / 4194304 steps)
+    (Validation) Returns: 29.610681921868945 +/- 2.172709773239372
+[INFO] Update 318 (2605056 / 4194304 steps)
+    (Validation) Returns: 30.2101634722599 +/- 2.208874897635276
+[INFO] Update 319 (2613248 / 4194304 steps)
+    (Validation) Returns: 30.174985830236068 +/- 2.8022061624634405
+[INFO] Update 320 (2621440 / 4194304 steps)
+    (Validation) Returns: 29.774952832572 +/- 2.269792870072176
+[INFO] Update 321 (2629632 / 4194304 steps)
+    (Validation) Returns: 29.81906414109818 +/- 2.624039851986552
+[INFO] Update 322 (2637824 / 4194304 steps)
+    (Validation) Returns: 30.016377675397216 +/- 2.2331350464093873
+[INFO] Update 323 (2646016 / 4194304 steps)
+    (Validation) Returns: 29.939725834537022 +/- 2.2531634590191754
+[INFO] Update 324 (2654208 / 4194304 steps)
+    (Validation) Returns: 29.718203195030526 +/- 1.971545283882341
+[INFO] Update 325 (2662400 / 4194304 steps)
+    (Validation) Returns: 30.05117706645795 +/- 2.214309339027146
+[INFO] Update 326 (2670592 / 4194304 steps)
+    (Validation) Returns: 29.508087209167588 +/- 2.1534205757577234
+[INFO] Update 327 (2678784 / 4194304 steps)
+    (Validation) Returns: 29.38316116942959 +/- 2.1697003725018433
+[INFO] Update 328 (2686976 / 4194304 steps)
+    (Validation) Returns: 30.256603837819455 +/- 2.625276581090087
+[INFO] Update 329 (2695168 / 4194304 steps)
+    (Validation) Returns: 30.120188937387546 +/- 2.504351897412483
+[INFO] Update 330 (2703360 / 4194304 steps)
+    (Validation) Returns: 29.616527479113536 +/- 2.075448169657564
+[INFO] Update 331 (2711552 / 4194304 steps)
+    (Validation) Returns: 29.17156671941232 +/- 2.443624251983962
+[INFO] Update 332 (2719744 / 4194304 steps)
+    (Validation) Returns: 29.7902664867028 +/- 2.7576027824113085
+[INFO] Update 333 (2727936 / 4194304 steps)
+    (Validation) Returns: 29.65388825029072 +/- 2.559188216763387
+[INFO] Update 334 (2736128 / 4194304 steps)
+    (Validation) Returns: 29.320816631692328 +/- 2.19679050745324
+[INFO] Update 335 (2744320 / 4194304 steps)
+    (Validation) Returns: 29.47781155911099 +/- 2.959498028098761
+[INFO] Update 336 (2752512 / 4194304 steps)
+    (Validation) Returns: 29.392305375941227 +/- 2.4022719236892502
+[INFO] Update 337 (2760704 / 4194304 steps)
+    (Validation) Returns: 30.09471352934935 +/- 2.5745257681037472
+[INFO] Update 338 (2768896 / 4194304 steps)
+    (Validation) Returns: 29.845733056397062 +/- 2.5513024342931407
+[INFO] Update 339 (2777088 / 4194304 steps)
+    (Validation) Returns: 29.89568943200454 +/- 2.0435691789083528
+[INFO] Update 340 (2785280 / 4194304 steps)
+    (Validation) Returns: 28.71430775458371 +/- 2.194637131955622
+[INFO] Update 341 (2793472 / 4194304 steps)
+    (Validation) Returns: 30.089768845786505 +/- 2.811204392131008
+[INFO] Update 342 (2801664 / 4194304 steps)
+    (Validation) Returns: 30.076351840376198 +/- 1.9690582183128276
+[INFO] Update 343 (2809856 / 4194304 steps)
+    (Validation) Returns: 29.809685305358364 +/- 2.0149924086220405
+[INFO] Update 344 (2818048 / 4194304 steps)
+    (Validation) Returns: 30.40944134053667 +/- 2.551597004249602
+[INFO] Update 345 (2826240 / 4194304 steps)
+    (Validation) Returns: 29.77696543943374 +/- 2.494316762128524
+[INFO] Update 346 (2834432 / 4194304 steps)
+    (Validation) Returns: 29.76484401554925 +/- 2.4804405276252877
+[INFO] Update 347 (2842624 / 4194304 steps)
+    (Validation) Returns: 29.53505178805083 +/- 1.8181018430369513
+[INFO] Update 348 (2850816 / 4194304 steps)
+    (Validation) Returns: 30.21093008561302 +/- 2.474464645202155
+[INFO] Update 349 (2859008 / 4194304 steps)
+    (Validation) Returns: 29.937997811117164 +/- 2.818333405155396
+[INFO] Update 350 (2867200 / 4194304 steps)
+    (Validation) Returns: 29.940305339957597 +/- 2.5653802327677933
+[INFO] Update 351 (2875392 / 4194304 steps)
+    (Validation) Returns: 30.068915784232708 +/- 2.036324975459313
+[INFO] Update 352 (2883584 / 4194304 steps)
+    (Validation) Returns: 29.482871240806475 +/- 2.397848575254929
+[INFO] Update 353 (2891776 / 4194304 steps)
+    (Validation) Returns: 30.091261636201647 +/- 2.314610667527137
+[INFO] Update 354 (2899968 / 4194304 steps)
+    (Validation) Returns: 29.897537243611055 +/- 2.1370672087483804
+[INFO] Update 355 (2908160 / 4194304 steps)
+    (Validation) Returns: 29.817845971699047 +/- 2.5649438811541083
+[INFO] Update 356 (2916352 / 4194304 steps)
+    (Validation) Returns: 29.66523500812948 +/- 2.36590311723442
+[INFO] Update 357 (2924544 / 4194304 steps)
+    (Validation) Returns: 30.246115634001466 +/- 2.556386744842507
+[INFO] Update 358 (2932736 / 4194304 steps)
+    (Validation) Returns: 30.19817541272888 +/- 2.2397979299401642
+[INFO] Update 359 (2940928 / 4194304 steps)
+    (Validation) Returns: 28.938519660634903 +/- 3.1229265461856763
+[INFO] Update 360 (2949120 / 4194304 steps)
+    (Validation) Returns: 29.985266821706226 +/- 2.6140162496406836
+[INFO] Update 361 (2957312 / 4194304 steps)
+    (Validation) Returns: 30.06286100544394 +/- 2.059968457226286
+[INFO] Update 362 (2965504 / 4194304 steps)
+    (Validation) Returns: 30.055599573243807 +/- 2.4506280200310426
+[INFO] Update 363 (2973696 / 4194304 steps)
+    (Validation) Returns: 30.207136559503304 +/- 2.382076143277767
+[INFO] Update 364 (2981888 / 4194304 steps)
+    (Validation) Returns: 28.707670913795187 +/- 2.5900800499148247
+[INFO] Update 365 (2990080 / 4194304 steps)
+    (Validation) Returns: 29.837558342856152 +/- 2.3675542593552636
+[INFO] Update 366 (2998272 / 4194304 steps)
+    (Validation) Returns: 30.086028341879842 +/- 2.6345895507299675
+[INFO] Update 367 (3006464 / 4194304 steps)
+    (Validation) Returns: 29.707138862037635 +/- 2.651554251557884
+[INFO] Update 368 (3014656 / 4194304 steps)
+    (Validation) Returns: 29.729008324196627 +/- 2.243833265023688
+[INFO] Update 369 (3022848 / 4194304 steps)
+    (Validation) Returns: 30.398629767695887 +/- 2.1940234522790023
+[INFO] Update 370 (3031040 / 4194304 steps)
+    (Validation) Returns: 29.585889006040173 +/- 2.069942221472735
+[INFO] Update 371 (3039232 / 4194304 steps)
+    (Validation) Returns: 30.37571544165798 +/- 2.2234265858394213
+[INFO] Update 372 (3047424 / 4194304 steps)
+    (Validation) Returns: 29.937486933624484 +/- 2.792448422704071
+[INFO] Update 373 (3055616 / 4194304 steps)
+    (Validation) Returns: 29.335215362663867 +/- 2.8922115092520984
+[INFO] Update 374 (3063808 / 4194304 steps)
+    (Validation) Returns: 30.416064618775437 +/- 2.39882686364534
+[INFO] Update 375 (3072000 / 4194304 steps)
+    (Validation) Returns: 29.565483960448393 +/- 2.475876095996551
+[INFO] Update 376 (3080192 / 4194304 steps)
+    (Validation) Returns: 29.951125206445454 +/- 2.498660419098505
+[INFO] Update 377 (3088384 / 4194304 steps)
+    (Validation) Returns: 29.921717236751817 +/- 2.7800232778947733
+[INFO] Update 378 (3096576 / 4194304 steps)
+    (Validation) Returns: 29.20490360939265 +/- 2.1767148933185294
+[INFO] Update 379 (3104768 / 4194304 steps)
+    (Validation) Returns: 29.74826288726431 +/- 2.243747416976449
+[INFO] Update 380 (3112960 / 4194304 steps)
+    (Validation) Returns: 30.3396889574796 +/- 2.4274471633773334
+[INFO] Update 381 (3121152 / 4194304 steps)
+    (Validation) Returns: 30.12822031729791 +/- 2.3934867677669986
+[INFO] Update 382 (3129344 / 4194304 steps)
+    (Validation) Returns: 30.330844309806583 +/- 2.4295612415189947
+[INFO] Update 383 (3137536 / 4194304 steps)
+    (Validation) Returns: 29.854551183731452 +/- 2.42733140785677
+[INFO] Update 384 (3145728 / 4194304 steps)
+    (Validation) Returns: 29.805159162203847 +/- 1.9762680912916168
+[INFO] Update 385 (3153920 / 4194304 steps)
+    (Validation) Returns: 30.167056720685423 +/- 2.2934997250261278
+[INFO] Update 386 (3162112 / 4194304 steps)
+    (Validation) Returns: 30.269536963269235 +/- 2.620232483425158
+[INFO] Update 387 (3170304 / 4194304 steps)
+    (Validation) Returns: 29.261407215250664 +/- 2.2456657712556027
+[INFO] Update 388 (3178496 / 4194304 steps)
+    (Validation) Returns: 29.853895313999555 +/- 2.3620711905584786
+[INFO] Update 389 (3186688 / 4194304 steps)
+    (Validation) Returns: 29.95012939079745 +/- 2.378370398752167
+[INFO] Update 390 (3194880 / 4194304 steps)
+    (Validation) Returns: 30.341901319662064 +/- 1.820368417506454
+[INFO] Update 391 (3203072 / 4194304 steps)
+    (Validation) Returns: 29.94836929535567 +/- 2.132193518245456
+[INFO] Update 392 (3211264 / 4194304 steps)
+    (Validation) Returns: 30.01616576874764 +/- 2.1305110225919064
+[INFO] Update 393 (3219456 / 4194304 steps)
+    (Validation) Returns: 30.13522324525585 +/- 1.9299212300563382
+[INFO] Update 394 (3227648 / 4194304 steps)
+    (Validation) Returns: 30.168540390047657 +/- 2.4908087797469425
+[INFO] Update 395 (3235840 / 4194304 steps)
+    (Validation) Returns: 30.000190426502428 +/- 2.754160275510916
+[INFO] Update 396 (3244032 / 4194304 steps)
+    (Validation) Returns: 30.274508240731723 +/- 2.5062961873483083
+[INFO] Update 397 (3252224 / 4194304 steps)
+    (Validation) Returns: 30.338358896271984 +/- 2.6750414373405995
+[INFO] Update 398 (3260416 / 4194304 steps)
+    (Validation) Returns: 29.9991416485182 +/- 2.73624180724525
+[INFO] Update 399 (3268608 / 4194304 steps)
+    (Validation) Returns: 30.270718446999968 +/- 2.109946586458924
+[INFO] Update 400 (3276800 / 4194304 steps)
+    (Validation) Returns: 30.36363098160634 +/- 2.786578266604081
+[INFO] Update 401 (3284992 / 4194304 steps)
+    (Validation) Returns: 30.248780150179687 +/- 2.2325309187763738
+[INFO] Update 402 (3293184 / 4194304 steps)
+    (Validation) Returns: 29.95666825971232 +/- 2.7579383410192717
+[INFO] Update 403 (3301376 / 4194304 steps)
+    (Validation) Returns: 30.510944601005043 +/- 2.358957676990274
+[INFO] Update 404 (3309568 / 4194304 steps)
+    (Validation) Returns: 29.08510545239219 +/- 2.3830887676573442
+[INFO] Update 405 (3317760 / 4194304 steps)
+    (Validation) Returns: 29.730227288897964 +/- 2.5264555705896234
+[INFO] Update 406 (3325952 / 4194304 steps)
+    (Validation) Returns: 29.64454911128984 +/- 2.2761741207662824
+[INFO] Update 407 (3334144 / 4194304 steps)
+    (Validation) Returns: 29.98705718050971 +/- 2.2894597324789565
+[INFO] Update 408 (3342336 / 4194304 steps)
+    (Validation) Returns: 30.290548495180314 +/- 2.2200141623251004
+[INFO] Update 409 (3350528 / 4194304 steps)
+    (Validation) Returns: 29.518366425412875 +/- 2.120540802817928
+[INFO] Update 410 (3358720 / 4194304 steps)
+    (Validation) Returns: 30.17982063041262 +/- 2.2866333763150117
+[INFO] Update 411 (3366912 / 4194304 steps)
+    (Validation) Returns: 30.00355632047947 +/- 2.3737193524707245
+[INFO] Update 412 (3375104 / 4194304 steps)
+    (Validation) Returns: 29.756347533674433 +/- 2.296013881166954
+[INFO] Update 413 (3383296 / 4194304 steps)
+    (Validation) Returns: 29.561724774869596 +/- 2.4865606975050243
+[INFO] Update 414 (3391488 / 4194304 steps)
+    (Validation) Returns: 30.09050262431589 +/- 1.9938733443735968
+[INFO] Update 415 (3399680 / 4194304 steps)
+    (Validation) Returns: 29.254074759867354 +/- 2.5930974241016944
+[INFO] Update 416 (3407872 / 4194304 steps)
+    (Validation) Returns: 29.82980160692756 +/- 2.9036561936326244
+[INFO] Update 417 (3416064 / 4194304 steps)
+    (Validation) Returns: 29.34250992997473 +/- 2.145799958641112
+[INFO] Update 418 (3424256 / 4194304 steps)
+    (Validation) Returns: 29.879274233871193 +/- 2.5755105038441
+[INFO] Update 419 (3432448 / 4194304 steps)
+    (Validation) Returns: 29.906375417491212 +/- 2.282354192031443
+[INFO] Update 420 (3440640 / 4194304 steps)
+    (Validation) Returns: 30.07828655510142 +/- 2.055937672804415
+[INFO] Update 421 (3448832 / 4194304 steps)
+    (Validation) Returns: 28.935728189420423 +/- 2.1802589037167093
+[INFO] Update 422 (3457024 / 4194304 steps)
+    (Validation) Returns: 29.875473478206278 +/- 2.243357734227064
+[INFO] Update 423 (3465216 / 4194304 steps)
+    (Validation) Returns: 29.981253301992098 +/- 2.414676142045255
+[INFO] Update 424 (3473408 / 4194304 steps)
+    (Validation) Returns: 29.307421600910903 +/- 2.1081098594592005
+[INFO] Update 425 (3481600 / 4194304 steps)
+    (Validation) Returns: 30.33728873748355 +/- 2.6967057585458507
+[INFO] Update 426 (3489792 / 4194304 steps)
+    (Validation) Returns: 29.89400003461783 +/- 2.152459600648778
+[INFO] Update 427 (3497984 / 4194304 steps)
+    (Validation) Returns: 30.051034486613304 +/- 2.2631290748839614
+[INFO] Update 428 (3506176 / 4194304 steps)
+    (Validation) Returns: 29.797655911734797 +/- 2.2652177378757616
+[INFO] Update 429 (3514368 / 4194304 steps)
+    (Validation) Returns: 29.723913104083124 +/- 2.536586466747458
+[INFO] Update 430 (3522560 / 4194304 steps)
+    (Validation) Returns: 29.740727507864356 +/- 2.386250271274302
+[INFO] Update 431 (3530752 / 4194304 steps)
+    (Validation) Returns: 29.94519225495382 +/- 2.3630731526953253
+[INFO] Update 432 (3538944 / 4194304 steps)
+    (Validation) Returns: 29.653401051304378 +/- 2.8058708109819257
+[INFO] Update 433 (3547136 / 4194304 steps)
+    (Validation) Returns: 29.239523939956644 +/- 2.328898892106438
+[INFO] Update 434 (3555328 / 4194304 steps)
+    (Validation) Returns: 30.045216214177664 +/- 2.6364785721481856
+[INFO] Update 435 (3563520 / 4194304 steps)
+    (Validation) Returns: 29.861591020607875 +/- 2.33816275639345
+[INFO] Update 436 (3571712 / 4194304 steps)
+    (Validation) Returns: 29.56681490610009 +/- 2.4928668444352087
+[INFO] Update 437 (3579904 / 4194304 steps)
+    (Validation) Returns: 29.723397646592485 +/- 2.820016116367567
+[INFO] Update 438 (3588096 / 4194304 steps)
+    (Validation) Returns: 29.58272372746029 +/- 2.380935909299618
+[INFO] Update 439 (3596288 / 4194304 steps)
+    (Validation) Returns: 30.72938876009 +/- 2.5343382055106254
+[INFO] Update 440 (3604480 / 4194304 steps)
+    (Validation) Returns: 29.286190126326215 +/- 2.704253780356954
+[INFO] Update 441 (3612672 / 4194304 steps)
+    (Validation) Returns: 29.787294723116474 +/- 2.0667414477813364
+[INFO] Update 442 (3620864 / 4194304 steps)
+    (Validation) Returns: 30.148533048316644 +/- 2.7847357361812493
+[INFO] Update 443 (3629056 / 4194304 steps)
+    (Validation) Returns: 29.529583230461856 +/- 2.55227904665823
+[INFO] Update 444 (3637248 / 4194304 steps)
+    (Validation) Returns: 29.57185525773169 +/- 2.0988316444485067
+[INFO] Update 445 (3645440 / 4194304 steps)
+    (Validation) Returns: 30.665454245570267 +/- 2.318908031897191
+[INFO] Update 446 (3653632 / 4194304 steps)
+    (Validation) Returns: 29.407086073308243 +/- 2.1420016807678346
+[INFO] Update 447 (3661824 / 4194304 steps)
+    (Validation) Returns: 29.828516939434984 +/- 2.7668825637953764
+[INFO] Update 448 (3670016 / 4194304 steps)
+    (Validation) Returns: 29.889003852850976 +/- 2.213516302567268
+[INFO] Update 449 (3678208 / 4194304 steps)
+    (Validation) Returns: 29.811990067344333 +/- 2.309403910604973
+[INFO] Update 450 (3686400 / 4194304 steps)
+    (Validation) Returns: 29.41638234494004 +/- 2.195172025192029
+[INFO] Update 451 (3694592 / 4194304 steps)
+    (Validation) Returns: 30.001326896702643 +/- 2.590767785350287
+[INFO] Update 452 (3702784 / 4194304 steps)
+    (Validation) Returns: 29.679273308111863 +/- 1.9792183682641054
+[INFO] Update 453 (3710976 / 4194304 steps)
+    (Validation) Returns: 29.32523887437967 +/- 2.6708269037068457
+[INFO] Update 454 (3719168 / 4194304 steps)
+    (Validation) Returns: 29.968172361937754 +/- 2.1735435035355
+[INFO] Update 455 (3727360 / 4194304 steps)
+    (Validation) Returns: 29.625324271673854 +/- 2.311361330083166
+[INFO] Update 456 (3735552 / 4194304 steps)
+    (Validation) Returns: 30.513914548325214 +/- 2.02832652413536
+[INFO] Update 457 (3743744 / 4194304 steps)
+    (Validation) Returns: 30.24892670152596 +/- 2.432384260604207
+[INFO] Update 458 (3751936 / 4194304 steps)
+    (Validation) Returns: 30.20471228080864 +/- 2.015777970774054
+[INFO] Update 459 (3760128 / 4194304 steps)
+    (Validation) Returns: 29.59748209509853 +/- 2.517117199409513
+[INFO] Update 460 (3768320 / 4194304 steps)
+    (Validation) Returns: 29.954803991284336 +/- 2.34895129066438
+[INFO] Update 461 (3776512 / 4194304 steps)
+    (Validation) Returns: 29.999490240263206 +/- 2.5269785184866707
+[INFO] Update 462 (3784704 / 4194304 steps)
+    (Validation) Returns: 30.85910974363386 +/- 2.328715353557803
+[INFO] Update 463 (3792896 / 4194304 steps)
+    (Validation) Returns: 29.658489684200823 +/- 2.5640265413269843
+[INFO] Update 464 (3801088 / 4194304 steps)
+    (Validation) Returns: 29.685928055374227 +/- 2.4956999463841187
+[INFO] Update 465 (3809280 / 4194304 steps)
+    (Validation) Returns: 29.64968700898868 +/- 2.9637108765695594
+[INFO] Update 466 (3817472 / 4194304 steps)
+    (Validation) Returns: 30.157466085335763 +/- 1.7518353181176693
+[INFO] Update 467 (3825664 / 4194304 steps)
+    (Validation) Returns: 29.920870327939394 +/- 2.075026446736363
+[INFO] Update 468 (3833856 / 4194304 steps)
+    (Validation) Returns: 30.36554651574885 +/- 2.1972642423663675
+[INFO] Update 469 (3842048 / 4194304 steps)
+    (Validation) Returns: 30.152262692716885 +/- 2.2450022523450137
+[INFO] Update 470 (3850240 / 4194304 steps)
+    (Validation) Returns: 30.14419562507686 +/- 2.135126955991254
+[INFO] Update 471 (3858432 / 4194304 steps)
+    (Validation) Returns: 29.83715684580566 +/- 2.3605125524192245
+[INFO] Update 472 (3866624 / 4194304 steps)
+    (Validation) Returns: 29.833457138263828 +/- 2.5790603491960216
+[INFO] Update 473 (3874816 / 4194304 steps)
+    (Validation) Returns: 29.80255291784556 +/- 2.0012659075909442
+[INFO] Update 474 (3883008 / 4194304 steps)
+    (Validation) Returns: 29.675114793147962 +/- 2.0793343968437847
+[INFO] Update 475 (3891200 / 4194304 steps)
+    (Validation) Returns: 30.25544571507991 +/- 2.619739133551358
+[INFO] Update 476 (3899392 / 4194304 steps)
+    (Validation) Returns: 30.040743716484116 +/- 2.850731887177029
+[INFO] Update 477 (3907584 / 4194304 steps)
+    (Validation) Returns: 29.641667838077296 +/- 2.254641721499732
+[INFO] Update 478 (3915776 / 4194304 steps)
+    (Validation) Returns: 30.54426946311414 +/- 2.312589122568045
+[INFO] Update 479 (3923968 / 4194304 steps)
+    (Validation) Returns: 30.005276421416532 +/- 3.1211717331649176
+[INFO] Update 480 (3932160 / 4194304 steps)
+    (Validation) Returns: 29.744658497242256 +/- 2.3804230440171072
+[INFO] Update 481 (3940352 / 4194304 steps)
+    (Validation) Returns: 29.739249730098635 +/- 2.786643903041072
+[INFO] Update 482 (3948544 / 4194304 steps)
+    (Validation) Returns: 30.32783545699254 +/- 2.4281937429739573
+[INFO] Update 483 (3956736 / 4194304 steps)
+    (Validation) Returns: 30.13630651845761 +/- 1.840606594574116
+[INFO] Update 484 (3964928 / 4194304 steps)
+    (Validation) Returns: 29.972921458259076 +/- 2.017050618581446
+[INFO] Update 485 (3973120 / 4194304 steps)
+    (Validation) Returns: 30.35315379823363 +/- 2.221380468263044
+[INFO] Update 486 (3981312 / 4194304 steps)
+    (Validation) Returns: 30.23349540863358 +/- 1.7840188700680435
+[INFO] Update 487 (3989504 / 4194304 steps)
+    (Validation) Returns: 29.988934038955357 +/- 1.750884642843195
+[INFO] Update 488 (3997696 / 4194304 steps)
+    (Validation) Returns: 30.29733214518141 +/- 2.309739134256188
+[INFO] Update 489 (4005888 / 4194304 steps)
+    (Validation) Returns: 29.742385735053915 +/- 2.0238092100637486
+[INFO] Update 490 (4014080 / 4194304 steps)
+    (Validation) Returns: 29.781702923278054 +/- 2.394702353769856
+[INFO] Update 491 (4022272 / 4194304 steps)
+    (Validation) Returns: 29.817811990168714 +/- 2.352332735900917
+[INFO] Update 492 (4030464 / 4194304 steps)
+    (Validation) Returns: 29.827020830100263 +/- 2.371645704132956
+[INFO] Update 493 (4038656 / 4194304 steps)
+    (Validation) Returns: 29.68964860137242 +/- 2.8650688085215714
+[INFO] Update 494 (4046848 / 4194304 steps)
+    (Validation) Returns: 29.396131849165318 +/- 2.4506127318331212
+[INFO] Update 495 (4055040 / 4194304 steps)
+    (Validation) Returns: 29.835139089976746 +/- 2.573346843978891
+[INFO] Update 496 (4063232 / 4194304 steps)
+    (Validation) Returns: 30.177324786285727 +/- 2.9085140570178365
+[INFO] Update 497 (4071424 / 4194304 steps)
+    (Validation) Returns: 30.16400607987514 +/- 3.0706198090704535
+[INFO] Update 498 (4079616 / 4194304 steps)
+    (Validation) Returns: 29.22393943799193 +/- 2.5471992402432053
+[INFO] Update 499 (4087808 / 4194304 steps)
+    (Validation) Returns: 29.268018497734317 +/- 2.3874989438083674
+[INFO] Update 500 (4096000 / 4194304 steps)
+    (Validation) Returns: 29.78388663107962 +/- 2.433773526260542
+[INFO] Update 501 (4104192 / 4194304 steps)
+    (Validation) Returns: 30.433030570912774 +/- 2.4578159893816407
+[INFO] Update 502 (4112384 / 4194304 steps)
+    (Validation) Returns: 29.924487538748245 +/- 2.57536364292505
+[INFO] Update 503 (4120576 / 4194304 steps)
+    (Validation) Returns: 29.549894141467252 +/- 2.258095941647675
+[INFO] Update 504 (4128768 / 4194304 steps)
+    (Validation) Returns: 29.89207578087712 +/- 1.8139005457549577
+[INFO] Update 505 (4136960 / 4194304 steps)
+    (Validation) Returns: 30.056373855116135 +/- 2.1565231359845023
+[INFO] Update 506 (4145152 / 4194304 steps)
+    (Validation) Returns: 29.80831491184468 +/- 2.059501250745641
+[INFO] Update 507 (4153344 / 4194304 steps)
+    (Validation) Returns: 29.763828767275832 +/- 2.6662591005942566
+[INFO] Update 508 (4161536 / 4194304 steps)
+    (Validation) Returns: 29.857370116753906 +/- 2.313489395944324
+[INFO] Update 509 (4169728 / 4194304 steps)
+    (Validation) Returns: 30.41130398350698 +/- 1.9744201963071686
+[INFO] Update 510 (4177920 / 4194304 steps)
+    (Validation) Returns: 30.01729744493462 +/- 2.445610795322384
+[INFO] Update 511 (4186112 / 4194304 steps)
+    (Validation) Returns: 29.63307378456934 +/- 2.1536030247917504
+[INFO] Training finished (4194304 steps)
+[INFO] Model saved at ppo/models/reward-prediction-finetune/reward-prediction-finetune-Sprites-v2-4194304steps.pt
